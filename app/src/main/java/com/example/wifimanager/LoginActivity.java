@@ -9,38 +9,32 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText passwordInput;
     private Button loginButton;
-    private final String STOK = "761be1984b53fcb8827421af299bdf88";  // Provided token
-    private final String ROUTER_URL = "http://192.168.31.1/cgi-bin/luci";  // Router URL
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        passwordInput = findViewById(R.id.password);  // EditText for password
-        loginButton = findViewById(R.id.loginButton);  // Button to trigger login
+        passwordInput = findViewById(R.id.password);
+        loginButton = findViewById(R.id.loginButton);
 
         loginButton.setOnClickListener(view -> {
             String password = passwordInput.getText().toString().trim();
             if (!password.isEmpty()) {
-                loginToRouter(password);  // Call the login method
+                loginToRouter(password);
             } else {
-                Toast.makeText(this, "Enter your password", Toast.LENGTH_SHORT).show();  // Error message if password is empty
+                Toast.makeText(this, "Enter your password", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -48,7 +42,6 @@ public class LoginActivity extends AppCompatActivity {
     private void loginToRouter(String password) {
         new Thread(() -> {
             try {
-                // Login API URL
                 String urlStr = "http://192.168.31.1/cgi-bin/luci/api/xqsystem/login";
                 URL url = new URL(urlStr);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -81,10 +74,8 @@ public class LoginActivity extends AppCompatActivity {
                 LoginResponse loginResponse = gson.fromJson(response.toString(), LoginResponse.class);
 
                 if (loginResponse.getCode() == 0) {
-                    // Login successful, extract token
                     String token = loginResponse.getToken();
                     if (token != null && !token.isEmpty()) {
-                        // Fetch the router name using the token
                         fetchRouterName(token);
                     } else {
                         runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Failed to extract token", Toast.LENGTH_SHORT).show());
@@ -103,7 +94,6 @@ public class LoginActivity extends AppCompatActivity {
     private void fetchRouterName(String token) {
         new Thread(() -> {
             try {
-                // Use the token to call the API for router name
                 String urlStr = "http://192.168.31.1/cgi-bin/luci/;stok=" + token + "/api/misystem/router_name";
                 URL url = new URL(urlStr);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -123,15 +113,14 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 reader.close();
 
-                // Parse the response to get router name using RouterNameResponse
                 Gson gson = new Gson();
                 RouterNameResponse routerNameResponse = gson.fromJson(response.toString(), RouterNameResponse.class);
 
                 if (routerNameResponse != null && routerNameResponse.getName() != null) {
                     String routerName = routerNameResponse.getName();
-                    // Pass the router name to MainActivity
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("ROUTER_NAME", routerName);
+                    intent.putExtra("STOK", token);
                     startActivity(intent);
                 } else {
                     runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Router name not found", Toast.LENGTH_SHORT).show());
@@ -143,7 +132,4 @@ public class LoginActivity extends AppCompatActivity {
             }
         }).start();
     }
-
-
-
 }

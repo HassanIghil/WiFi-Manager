@@ -1,7 +1,5 @@
 package com.example.wifimanager.miwifi.DO;
 
-
-
 import lombok.Data;
 
 import java.util.List;
@@ -37,7 +35,6 @@ public class MiWifiDeviceDO {
         int lan;
         int pridisk;
         int wan;
-
     }
 
     @Data
@@ -46,6 +43,7 @@ public class MiWifiDeviceDO {
         String online;
         String upspeed;
     }
+
     @Override
     public boolean equals(Object o) {
         if (o instanceof MiWifiDeviceDO) {
@@ -54,5 +52,4 @@ public class MiWifiDeviceDO {
         }
         return super.equals(o);
     }
-
 }

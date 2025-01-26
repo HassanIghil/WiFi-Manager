@@ -5,16 +5,24 @@ import com.example.wifimanager.miwifi.impl.*;
 import com.example.wifimanager.miwifi.model.*;
 import android.os.Build;
 import androidx.annotation.RequiresApi;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import cn.hutool.aop.ProxyUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
-
 
 public class MiWifi implements MiWifiService {
 
@@ -36,11 +44,19 @@ public class MiWifi implements MiWifiService {
         this.api = ProxyUtil.newProxyInstance(new MiWifiInvocationHandler(api), MiWifiApi.class);
     }
 
+    /**
+     * Authenticates with the router and retrieves a session token.
+     * @return Session token if successful, null otherwise.
+     */
+    public String login() {
+        MiWifiLoginDO loginResponse = api.login();
+        return loginResponse != null && loginResponse.getCode() == 0 ? loginResponse.getToken() : null;
+    }
 
     /**
-     * Obtient tous les appareils en ligne
+     * Obtains all online devices
      *
-     * @return Collection des appareils en ligne
+     * @return Collection of online devices
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -63,20 +79,19 @@ public class MiWifi implements MiWifiService {
             device.setDownloadSpeed(Integer.parseInt(ip.getDownspeed()));
             device.setOnlineSecond(Integer.parseInt(ip.getOnline()));
             device.setUploadSpeed(Integer.parseInt(ip.getUpspeed()));
-            DateTime upTime = null;
-            upTime = DateUtil.offsetSecond(Date.from(sysTime.toInstant()), -device.getOnlineSecond());
+            DateTime upTime = DateUtil.offsetSecond(Date.from(sysTime.toInstant()), -device.getOnlineSecond());
             device.setUpTime(LocalDateTime.ofInstant(upTime.toInstant(), sysTime.getZone()));
-            device.setAllowAdmin(deviceVO.getAuthority().getAdmin()==1);
-            device.setAllowLan(deviceVO.getAuthority().getLan()==1);
-            device.setAllowPriDisk(deviceVO.getAuthority().getPridisk()==1);
-            device.setAllowWan(deviceVO.getAuthority().getWan()==1);
+            device.setAllowAdmin(deviceVO.getAuthority().getAdmin() == 1);
+            device.setAllowLan(deviceVO.getAuthority().getLan() == 1);
+            device.setAllowPriDisk(deviceVO.getAuthority().getPridisk() == 1);
+            device.setAllowWan(deviceVO.getAuthority().getWan() == 1);
             devices.add(device);
         }
         return devices;
     }
 
     /**
-     * Nom du routeur et emplacement
+     * Router name and location
      */
     @Override
     public MiWifiRouterName routerName() {
@@ -88,43 +103,38 @@ public class MiWifi implements MiWifiService {
     }
 
     /**
-     * Définit le nom et l'emplacement du routeur
+     * Set the router name and location
      *
-     * @param name   Nom
-     * @param locale Emplacement
-     * @return Succès ou échec de la configuration
+     * @param name   Name
+     * @param locale Location
+     * @return Success or failure of the configuration
      */
     @Override
     public boolean setRouterName(String name, String locale) {
-        // {"locale":"Home","name":"Xiaomi_A3D7","code":0}
         MiWifiBaseDO miWifiBaseDO = api.setRouterName(name, locale);
         return miWifiBaseDO.getCode() == 0;
     }
 
     /**
-     * Obtient l'heure système du routeur
+     * Obtains the system time from the router
      *
-     * @return Heure système
+     * @return System time
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public ZonedDateTime sysTime() {
         MiWifiTimeDO timeVO = api.sysTime();
         MiWifiTimeDO.Time time = timeVO.getTime();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Use ZonedDateTime with the system time and timezone
-            return ZonedDateTime.of(time.getYear(), time.getMonth(), time.getDay(), time.getHour(), time.getMin(), time.getSec(), 0, ZoneId.of(time.getTimezone().replace("CST-", "UTC+").replace("CST+", "UTC-")));
-        } else {
-            // Use ThreeTenABP or fallback logic for older versions
-            return ZonedDateTime.now();  // Example fallback
-        }
-
+        return ZonedDateTime.of(time.getYear(), time.getMonth(), time.getDay(),
+                time.getHour(), time.getMin(), time.getSec(), 0,
+                ZoneId.of(time.getTimezone().replace("CST-", "UTC+").replace("CST+", "UTC-")));
     }
 
     /**
-     * Définit l'heure système du routeur
-     * @param time Heure
-     * @return Succès ou échec de la configuration
+     * Set the system time on the router
+     *
+     * @param time Time
+     * @return Success or failure of the configuration
      */
     public boolean setSysTime(ZonedDateTime time) {
         MiWifiBaseDO miWifiBaseDO = api.setSysTime(time);
@@ -132,7 +142,7 @@ public class MiWifi implements MiWifiService {
     }
 
     /**
-     * Statut du système du routeur
+     * Get the router's system status
      *
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -195,90 +205,50 @@ public class MiWifi implements MiWifiService {
         return status;
     }
 
-    /**
-     * Permet l'accès à Internet.
-     * @param mac Adresse MAC
-     * @return Succès ou échec
-     */
-    public boolean allowWan(String mac){
+    // Additional functions related to controlling devices and filtering
+    public boolean allowWan(String mac) {
         MiWifiBaseDO vo = api.setMacFilter(mac, true);
-        return vo.getCode()==0;
+        return vo.getCode() == 0;
     }
 
-    /**
-     * Interdit l'accès à Internet. L'appareil peut se connecter au wifi et accéder au réseau local.
-     * @param mac Adresse MAC
-     * @return Succès ou échec
-     */
-    public boolean forbidWan(String mac){
+    public boolean forbidWan(String mac) {
         MiWifiBaseDO vo = api.setMacFilter(mac, false);
-        return vo.getCode()==0;
+        return vo.getCode() == 0;
     }
 
-    /**
-     * Permet la connexion au wifi
-     * @param mac Adresse MAC
-     * @return Succès ou échec
-     */
-    public boolean allowConnWifi(String mac){
+    public boolean allowConnWifi(String mac) {
         MiWifiBaseDO vo = api.editDevice(mac, true, false);
-        return vo.getCode()==0;
+        return vo.getCode() == 0;
     }
 
-    /**
-     * Interdit la connexion au wifi
-     * @param mac Adresse MAC
-     * @return Succès ou échec
-     */
-    public boolean forbidConnWifi(String mac){
+    public boolean forbidConnWifi(String mac) {
         MiWifiBaseDO vo = api.editDevice(mac, true, true);
-        return vo.getCode()==0;
+        return vo.getCode() == 0;
     }
 
-    /**
-     * Liste des appareils dans la liste noire wifi.
-     * @return Liste des appareils dans la liste noire
-     */
-    public List<MiWifiMacFilter> blackList(){
+    public List<MiWifiMacFilter> blackList() {
         MiWifiMacFilterInfoDO info = api.macFilterInfo(true);
         return getMiWifiMacFilters(info);
     }
 
-    /**
-     * Liste des appareils dans la liste blanche wifi.
-     * @return Liste des appareils dans la liste blanche
-     */
-    public List<MiWifiMacFilter> whiteList(){
+    public List<MiWifiMacFilter> whiteList() {
         MiWifiMacFilterInfoDO info = api.macFilterInfo(false);
         return getMiWifiMacFilters(info);
     }
 
-    /**
-     * Vérifie si le mode de contrôle wifi actuel est en mode liste noire.
-     * @return Si le mode est liste noire.
-     */
-    public boolean isBlackControlMode(){
+    public boolean isBlackControlMode() {
         MiWifiMacFilterInfoDO info = api.macFilterInfo(false);
-        return info.getModel()==0;
+        return info.getModel() == 0;
     }
 
-    /**
-     * Définit le mode de contrôle wifi.
-     * @param blackmode Si c'est le mode liste noire.
-     * @return Succès ou échec
-     */
-    public boolean enableWifiControl(boolean blackmode){
+    public boolean enableWifiControl(boolean blackmode) {
         MiWifiBaseDO vo = api.setWifiFilter(true, blackmode);
-        return vo.getCode()==0;
+        return vo.getCode() == 0;
     }
 
-    /**
-     * Désactive le mode de contrôle wifi.
-     * @return Succès ou échec
-     */
-    public boolean disableWifiControl(){
+    public boolean disableWifiControl() {
         MiWifiBaseDO vo = api.setWifiFilter(false, false);
-        return vo.getCode()==0;
+        return vo.getCode() == 0;
     }
 
     private List<MiWifiMacFilter> getMiWifiMacFilters(MiWifiMacFilterInfoDO info) {
@@ -293,4 +263,96 @@ public class MiWifi implements MiWifiService {
         return list;
     }
 
-}
+
+        private static final String ROUTER_URL = "http://192.168.31.1"; // Replace with your router's URL
+
+        // Login method to first get the token and then perform the login
+        public String login(String username, String password) {
+            String token = getSessionToken();
+
+            if (token != null) {
+                String loginUrl = ROUTER_URL + "/cgi-bin/luci/;stok=" + token + "/api/misystem/login";
+
+                // Prepare the parameters for login (username and password)
+                Map<String, String> params = new HashMap<>();
+                params.put("username", username);
+                params.put("password", password);
+
+                // Make the login request
+                String response = makeHttpRequest(loginUrl, params);
+
+                // Check if login was successful (you can customize this response check)
+                if (response != null && response.contains("success")) {
+                    return token;  // Return the token on success
+                }
+            }
+
+            return null;  // Return null if login failed
+        }
+
+        // Get session token (stok) by making an unauthenticated GET request
+        private String getSessionToken() {
+            try {
+                URL url = new URL(ROUTER_URL + "/cgi-bin/luci");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+
+                // Read response to extract token from the headers or body
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line;
+                String token = null;
+                while ((line = reader.readLine()) != null) {
+                    // Look for the token in the response (you can adjust this depending on how the token is returned)
+                    if (line.contains("stok=")) {
+                        token = line.split("stok=")[1].split("\"")[0];
+                        break;
+                    }
+                }
+                reader.close();
+                return token;  // Return the session token
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;  // Return null if token retrieval fails
+        }
+
+        // Helper method to send a POST request for login
+        private String makeHttpRequest(String urlStr, Map<String, String> params) {
+            try {
+                URL url = new URL(urlStr);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setDoOutput(true);
+
+                // Set POST parameters (username and password)
+                StringBuilder postData = new StringBuilder();
+                for (Map.Entry<String, String> entry : params.entrySet()) {
+                    if (postData.length() > 0) postData.append('&');
+                    postData.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+                    postData.append('=');
+                    postData.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+                }
+
+                // Send the POST data
+                connection.getOutputStream().write(postData.toString().getBytes("UTF-8"));
+
+                // Get the response
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+                return response.toString();  // Return the response body
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;  // Return null if request fails
+        }
+    }
+

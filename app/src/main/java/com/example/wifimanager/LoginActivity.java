@@ -118,10 +118,13 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (routerNameResponse != null && routerNameResponse.getName() != null) {
                     String routerName = routerNameResponse.getName();
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.putExtra("ROUTER_NAME", routerName);
-                    intent.putExtra("STOK", token);
-                    startActivity(intent);
+                    runOnUiThread(() -> {
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra("ROUTER_NAME", routerName);
+                        intent.putExtra("STOK", token);
+                        startActivity(intent);
+                        finish(); // Finish LoginActivity to prevent going back to it
+                    });
                 } else {
                     runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Router name not found", Toast.LENGTH_SHORT).show());
                 }

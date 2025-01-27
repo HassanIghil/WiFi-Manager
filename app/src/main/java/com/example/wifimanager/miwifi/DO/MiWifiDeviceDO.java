@@ -1,7 +1,6 @@
 package com.example.wifimanager.miwifi.DO;
 
 import lombok.Data;
-
 import java.util.List;
 
 @Data
@@ -19,6 +18,7 @@ public class MiWifiDeviceDO {
     int push;
     int times;
     int type;
+    long connectionTime; // This field should be set by the router
 
     @Data
     public static class IP {
@@ -46,10 +46,19 @@ public class MiWifiDeviceDO {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof MiWifiDeviceDO) {
-            MiWifiDeviceDO device = (MiWifiDeviceDO) o;
-            return this.mac.equals(device.mac);
-        }
-        return super.equals(o);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MiWifiDeviceDO that = (MiWifiDeviceDO) o;
+
+        if (!mac.equals(that.mac)) return false;
+        return name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + mac.hashCode();
+        return result;
     }
 }

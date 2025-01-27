@@ -1,6 +1,7 @@
 package com.example.wifimanager;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,19 +17,33 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private String STOK;
     private RecyclerView recyclerView;
+    private DeviceAdapter adapter;
+    private Handler handler;
+    private Runnable refreshRunnable;
+    private static final int REFRESH_INTERVAL = 5000; // 5 seconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         String routerName = getIntent().getStringExtra("ROUTER_NAME");
         STOK = getIntent().getStringExtra("STOK");
+
+        if (STOK == null || STOK.isEmpty()) {
+            Toast.makeText(this, "STOK token is missing", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         // Display the router name in a TextView
         TextView routerNameTextView = findViewById(R.id.routername);
@@ -41,9 +56,28 @@ public class MainActivity extends AppCompatActivity {
         // Initialize RecyclerView
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new DeviceAdapter(new ArrayList<>());
+        recyclerView.setAdapter(adapter);
 
-        // Fetch connected devices
-        fetchConnectedDevices();
+        // Initialize Handler and Runnable for periodic refresh
+        handler = new Handler();
+        refreshRunnable = new Runnable() {
+            @Override
+            public void run() {
+                fetchConnectedDevices();
+                handler.postDelayed(this, REFRESH_INTERVAL);
+            }
+        };
+
+        // Start the periodic refresh
+        handler.post(refreshRunnable);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Stop the periodic refresh when the activity is destroyed
+        handler.removeCallbacks(refreshRunnable);
     }
 
     private void fetchConnectedDevices() {
@@ -75,10 +109,13 @@ public class MainActivity extends AppCompatActivity {
 
                 if (deviceListResponse != null && deviceListResponse.getList() != null) {
                     List<MiWifiDeviceDO> deviceList = deviceListResponse.getList();
+
+                    // Sort the device list based on connection time
+                    Collections.sort(deviceList, Comparator.comparingLong(MiWifiDeviceDO::getConnectionTime));
+
                     runOnUiThread(() -> {
                         // Update RecyclerView with the list of connected devices
-                        DeviceAdapter adapter = new DeviceAdapter(deviceList);
-                        recyclerView.setAdapter(adapter);
+                        adapter.updateDeviceList(deviceList);
                     });
                 } else {
                     runOnUiThread(() -> Toast.makeText(MainActivity.this, "No connected devices found", Toast.LENGTH_SHORT).show());

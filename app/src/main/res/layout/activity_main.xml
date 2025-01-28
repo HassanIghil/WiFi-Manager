@@ -38,24 +38,48 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- RecyclerView for Connected Devices -->
+    <!-- GIF ImageView -->
+    <ImageView
+        android:id="@+id/gifImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/routerNameLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Separator Line -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <!-- Include Speed Test Layout -->
+    <include
+        layout="@layout/speed_test_layout"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:layout_constraintTop_toBottomOf="@+id/gifImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- SwipeRefreshLayout containing RecyclerView -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="100dp"
-        android:background="@color/white"
-        android:padding="8dp"
-        android:scrollbars="vertical"
+        android:layout_height="500dp"
         app:layout_constraintBottom_toTopOf="@id/separator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/routerNameLayout"
-        app:layout_constraintVertical_bias="0.0" />
 
+        app:layout_constraintVertical_bias="0.0">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:padding="8dp"
+            android:scrollbars="vertical" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- Separator Line -->
     <View
         android:id="@+id/separator"
         android:layout_width="match_parent"

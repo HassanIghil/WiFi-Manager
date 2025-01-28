@@ -7,5 +7,8 @@
     <color name="blue">#0000FF</color> <!-- Define blue color -->
     <color name="colorPrimary">#6200EE</color> <!-- Define primary color -->
     <color name="colorPrimaryDark">#3700B3</color> <!-- Define primary dark color -->
-    <color name="colorAccent">#03DAC5</color> <!-- Define accent color -->
+    <color name="colorAccent">#03DAC5</color>
+    <color name="yellow">#F4E0AF</color> <!-- Define accent color -->
+    <color name="green">#A1EEBD</color> <!-- Define green color -->
+
 </resources>

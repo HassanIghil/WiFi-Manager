@@ -1,9 +1,9 @@
 package com.example.wifimanager;
 
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,57 +13,67 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.wifimanager.miwifi.DO.MiWifiDeviceDO;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder> {
+public class DeviceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private static final int VIEW_TYPE_HEADER = 0;
+    private static final int VIEW_TYPE_ITEM = 1;
 
     private List<MiWifiDeviceDO> deviceList;
-    private Handler handler = new Handler();
+    private int connectedDevicesCount;
 
     public DeviceAdapter(List<MiWifiDeviceDO> deviceList) {
         this.deviceList = deviceList;
-        startRefreshing();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position == 0 ? VIEW_TYPE_HEADER : VIEW_TYPE_ITEM;
     }
 
     @NonNull
     @Override
-    public DeviceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.device_item, parent, false);
-        return new DeviceViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == VIEW_TYPE_HEADER) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.header_item, parent, false);
+            return new HeaderViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.device_item, parent, false);
+            return new DeviceViewHolder(view);
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DeviceViewHolder holder, int position) {
-        MiWifiDeviceDO device = deviceList.get(position);
-        holder.deviceName.setText(device.getName());
-        holder.deviceMac.setText(device.getMac());
-        if (device.getIp() != null && !device.getIp().isEmpty()) {
-            holder.deviceIp.setText(device.getIp().get(0).getIp());
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (holder.getItemViewType() == VIEW_TYPE_HEADER) {
+            HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
+            headerHolder.connectedDevicesTextView.setText("Connected Devices: " + connectedDevicesCount);
         } else {
-            holder.deviceIp.setText("No IP");
-        }
+            DeviceViewHolder deviceHolder = (DeviceViewHolder) holder;
+            MiWifiDeviceDO device = deviceList.get(position - 1); // Adjust for header
+            deviceHolder.deviceName.setText(device.getName());
+            deviceHolder.deviceConnectionTime.setText(getHumanReadableTime(Long.parseLong(device.getIp().get(0).getOnline())));
 
-        // Display the connection time
-        displayConnectionTime(holder, device);
+            // Concatenate MAC address and IP address
+            String macAddress = "MAC: " + device.getMac();
+            String ipAddress = "IP: " + (device.getIp() != null && !device.getIp().isEmpty() ? device.getIp().get(0).getIp() : "No IP");
+            deviceHolder.deviceMac.setText(macAddress);
+            deviceHolder.deviceIp.setText(ipAddress);
+
+            // Set device image
+            deviceHolder.deviceImage.setImageResource(getDeviceImageResource(device.getName()));
+        }
     }
 
     @Override
     public int getItemCount() {
-        return deviceList.size();
+        return deviceList.size() + 1; // Add one for the header
     }
 
     public void updateDeviceList(List<MiWifiDeviceDO> newDeviceList) {
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DeviceDiffCallback(this.deviceList, newDeviceList));
-        this.deviceList.clear();
-        this.deviceList.addAll(newDeviceList);
-        diffResult.dispatchUpdatesTo(this);
-    }
-
-    private void displayConnectionTime(DeviceViewHolder holder, MiWifiDeviceDO device) {
-        long connectionTime = Long.parseLong(device.getIp().get(0).getOnline()); // Get the connection time in seconds
-        long elapsedTime = connectionTime; // Use the connection time directly
-        String timeString = getHumanReadableTime(elapsedTime);
-        holder.deviceConnectionTime.setText(timeString);
+        this.deviceList = newDeviceList;
+        this.connectedDevicesCount = newDeviceList.size();
+        notifyDataSetChanged();
     }
 
     private String getHumanReadableTime(long seconds) {
@@ -78,62 +88,45 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         }
     }
 
-    private void startRefreshing() {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                notifyDataSetChanged(); // Refresh the entire list
-                handler.postDelayed(this, 60000); // Refresh every minute
-            }
-        }, 60000); // Initial delay of 1 minute
+    private int getDeviceImageResource(String deviceName) {
+        if (deviceName.toLowerCase().contains("huawei")) {
+            return R.drawable.huawei;
+        } else if (deviceName.toLowerCase().contains("apple") || deviceName.toLowerCase().contains("iphone") || deviceName.toLowerCase().contains("ipad")) {
+            return R.drawable.apple;
+        } else if (deviceName.toLowerCase().contains("samsung")) {
+            return R.drawable.samsung;
+        } else if (deviceName.toLowerCase().contains("desktop") || deviceName.toLowerCase().contains("pc")) {
+            return R.drawable.pc;
+        } else if (deviceName.toLowerCase().contains("tv") || deviceName.toLowerCase().contains("xbox")) {
+            return R.drawable.tv;
+        } else {
+            return R.drawable.android;
+        }
+    }
+
+    static class HeaderViewHolder extends RecyclerView.ViewHolder {
+        TextView connectedDevicesTextView;
+
+        public HeaderViewHolder(@NonNull View itemView) {
+            super(itemView);
+            connectedDevicesTextView = itemView.findViewById(R.id.connectedDevicesTextView);
+        }
     }
 
     static class DeviceViewHolder extends RecyclerView.ViewHolder {
-
         TextView deviceName;
+        TextView deviceConnectionTime;
         TextView deviceMac;
         TextView deviceIp;
-        TextView deviceConnectionTime;
+        ImageView deviceImage;
 
         public DeviceViewHolder(@NonNull View itemView) {
             super(itemView);
             deviceName = itemView.findViewById(R.id.deviceName);
+            deviceConnectionTime = itemView.findViewById(R.id.deviceConnectionTime);
             deviceMac = itemView.findViewById(R.id.deviceMac);
             deviceIp = itemView.findViewById(R.id.deviceIp);
-            deviceConnectionTime = itemView.findViewById(R.id.deviceConnectionTime);
-        }
-    }
-
-    static class DeviceDiffCallback extends DiffUtil.Callback {
-
-        private final List<MiWifiDeviceDO> oldList;
-        private final List<MiWifiDeviceDO> newList;
-
-        public DeviceDiffCallback(List<MiWifiDeviceDO> oldList, List<MiWifiDeviceDO> newList) {
-            this.oldList = oldList;
-            this.newList = newList;
-        }
-
-        @Override
-        public int getOldListSize() {
-            return oldList.size();
-        }
-
-        @Override
-        public int getNewListSize() {
-            return newList.size();
-        }
-
-        @Override
-        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldList.get(oldItemPosition).getMac().equals(newList.get(newItemPosition).getMac());
-        }
-
-        @Override
-        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            MiWifiDeviceDO oldDevice = oldList.get(oldItemPosition);
-            MiWifiDeviceDO newDevice = newList.get(newItemPosition);
-            return oldDevice.equals(newDevice);
+            deviceImage = itemView.findViewById(R.id.deviceIcon);
         }
     }
 }

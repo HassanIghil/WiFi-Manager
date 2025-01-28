@@ -11,6 +11,7 @@ constraintlayout = "2.2.0"
 datastoreCoreAndroid = "1.1.1"
 volley = "1.2.1"
 lombok = "1.18.30"
+swiperefreshlayout = "1.1.0"
 
 [libraries]
 hutool = { module = "cn:hutool", version.ref = "hutool" }
@@ -24,6 +25,7 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
+swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

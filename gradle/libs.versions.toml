@@ -12,6 +12,7 @@ datastoreCoreAndroid = "1.1.1"
 volley = "1.2.1"
 lombok = "1.18.30"
 swiperefreshlayout = "1.1.0"
+navigationFragment = "2.8.5"
 
 [libraries]
 hutool = { module = "cn:hutool", version.ref = "hutool" }
@@ -26,6 +27,7 @@ datastore-core-android = { group = "androidx.datastore", name = "datastore-core-
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
+navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

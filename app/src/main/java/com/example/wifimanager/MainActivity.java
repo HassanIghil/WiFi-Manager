@@ -17,20 +17,24 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private String STOK;
+    private String routerName; // Add this field
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Retrieve both STOK and router name
         STOK = getIntent().getStringExtra("STOK");
+        routerName = getIntent().getStringExtra("ROUTER_NAME"); // Add this line
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    selectedFragment = HomeFragment.newInstance(STOK, null);
+                    // Pass both STOK and router name to HomeFragment
+                    selectedFragment = HomeFragment.newInstance(STOK, routerName);
                     break;
                 case R.id.navigation_settings:
                     selectedFragment = new SettingsFragment();

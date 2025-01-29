@@ -53,10 +53,11 @@ public class HomeFragment extends Fragment {
     private String STOK;
 
     // Add this method to create a new instance of HomeFragment
-    public static HomeFragment newInstance(String stok, String param2) {
+    public static HomeFragment newInstance(String stok, String routerName) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
         args.putString("STOK", stok);
+        args.putString("ROUTER_NAME", routerName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -104,9 +105,18 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupViews(View view) {
+        // Add router name initialization
+        TextView routerNameTextView = view.findViewById(R.id.routername);
         uploadSpeedTextView = view.findViewById(R.id.upload);
         downloadSpeedTextView = view.findViewById(R.id.textView4);
 
+        // Retrieve router name from arguments
+        if (getArguments() != null) {
+            String routerName = getArguments().getString("ROUTER_NAME", "My Router");
+            routerNameTextView.setText(routerName);
+        }
+
+        // Existing arrow setup code...
         ImageView upArrow = view.findViewById(R.id.imageView2);
         ImageView downArrow = view.findViewById(R.id.imageView3);
         Glide.with(this)
@@ -122,10 +132,9 @@ public class HomeFragment extends Fragment {
     private void setupRecyclerView(View view) {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new DeviceAdapter(new ArrayList<>(), device -> {
-            NavHostFragment.findNavController(HomeFragment.this)
-                    .navigate(HomeFragmentDirections.actionHomeFragmentToDeviceDetailFragment(device));
-        });
+
+        // Remove the click listener and navigation code
+        adapter = new DeviceAdapter(new ArrayList<>()); // Only pass the device list
         recyclerView.setAdapter(adapter);
     }
 

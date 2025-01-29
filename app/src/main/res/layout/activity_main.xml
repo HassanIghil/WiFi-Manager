@@ -5,96 +5,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
     tools:context=".MainActivity">
 
-    <!-- Top Layout for Router Name -->
-    <LinearLayout
-        android:id="@+id/routerNameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="30dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="10dp"
-            android:contentDescription="Router"
-            app:srcCompat="@drawable/router" />
-
-        <TextView
-            android:id="@+id/routername"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Router Name"
-            android:textColor="@android:color/white"
-            android:textSize="15sp"
-            android:layout_marginTop="10dp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <!-- GIF ImageView -->
-    <ImageView
-        android:id="@+id/gifImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/routerNameLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Include Speed Test Layout -->
-    <include
-        layout="@layout/speed_test_layout"
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="0dp"
-        android:layout_height="100dp"
-        app:layout_constraintTop_toBottomOf="@+id/gifImageView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- SwipeRefreshLayout containing RecyclerView -->
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
-        android:layout_width="match_parent"
-        android:layout_height="500dp"
-        app:layout_constraintBottom_toTopOf="@id/separator"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-
-        app:layout_constraintVertical_bias="0.0">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            android:padding="8dp"
-            android:scrollbars="vertical" />
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <!-- Separator Line -->
-    <View
-        android:id="@+id/separator"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/gray"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/navColor"
         style="@style/NoShadowBottomNavigationView"
         app:menu="@menu/bottom_nav_menu"
         app:itemIconTint="@color/nav_item_color"

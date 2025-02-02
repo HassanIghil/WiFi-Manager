@@ -15,10 +15,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
 import com.example.wifimanager.DeviceAdapter;
+import com.example.wifimanager.Devices_List.DeviceDetailsActivity;
 import com.example.wifimanager.R;
 import com.example.wifimanager.miwifi.DO.MiWifiDeviceDO;
 import com.example.wifimanager.miwifi.DO.MiWifiDevicelistDO;
@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import android.content.Intent;
 
 public class HomeFragment extends Fragment {
 
@@ -133,8 +134,20 @@ public class HomeFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        // Remove the click listener and navigation code
-        adapter = new DeviceAdapter(new ArrayList<>()); // Only pass the device list
+        // Ensure STOK is retrieved from arguments first
+        if (getArguments() != null) {
+            STOK = getArguments().getString("STOK");
+        }
+
+        adapter = new DeviceAdapter(new ArrayList<>(), device -> {
+            Intent intent = new Intent(getActivity(), DeviceDetailsActivity.class);
+            intent.putExtra("DEVICE_NAME", device.getName());
+            intent.putExtra("DEVICE_IP", device.getIp().get(0).getIp());
+            intent.putExtra("DEVICE_MAC", device.getMac());
+            intent.putExtra("STOK", STOK); // Make sure STOK is passed here
+            startActivity(intent);
+        }, STOK);
+        
         recyclerView.setAdapter(adapter);
     }
 
@@ -229,10 +242,10 @@ public class HomeFragment extends Fragment {
                 HttpURLConnection connection = (HttpURLConnection) new URL(urlStr).openConnection();
                 connection.setRequestMethod("GET");
 
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    safeToast("Speed test failed: " + connection.getResponseCode());
-                    return;
-                }
+                //if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                   // safeToast("Speed test failed: " + connection.getResponseCode());
+                  //  return;
+                //}
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 StringBuilder response = new StringBuilder();

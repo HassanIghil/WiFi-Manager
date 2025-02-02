@@ -1,15 +1,21 @@
 package com.example.wifimanager;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import com.google.gson.Gson;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.wifimanager.Devices_List.DeviceDetailsActivity;
 import com.example.wifimanager.miwifi.DO.MiWifiDeviceDO;
 
 import java.util.List;
@@ -21,9 +27,17 @@ public class DeviceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private List<MiWifiDeviceDO> deviceList;
     private int connectedDevicesCount;
+    private final OnItemClickListener listener;
+    private String stok;
 
-    public DeviceAdapter(List<MiWifiDeviceDO> deviceList) {
+    public interface OnItemClickListener {
+        void onItemClick(MiWifiDeviceDO device);
+    }
+
+    public DeviceAdapter(List<MiWifiDeviceDO> deviceList, OnItemClickListener listener, String stok) {
         this.deviceList = deviceList;
+        this.listener = listener;
+        this.stok = stok;
     }
 
     @Override
@@ -61,7 +75,27 @@ public class DeviceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             deviceHolder.deviceIp.setText(ipAddress);
 
             // Set device image
-            deviceHolder.deviceImage.setImageResource(getDeviceImageResource(device.getName()));
+            int deviceImageRes = getDeviceImageResource(device.getName());
+            deviceHolder.deviceImage.setImageResource(deviceImageRes);
+
+            // Update speed display
+            String uploadSpeed = device.getIp().get(0).getUpspeed();
+            String downloadSpeed = device.getIp().get(0).getDownspeed();
+
+            // Set click listener with image resource
+            deviceHolder.itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    Intent intent = new Intent(v.getContext(), DeviceDetailsActivity.class);
+                    intent.putExtra("DEVICE_NAME", device.getName());
+                    intent.putExtra("DEVICE_IP", device.getIp().get(0).getIp());
+                    intent.putExtra("DEVICE_MAC", device.getMac());
+                    intent.putExtra("DEVICE_IMAGE", deviceImageRes);
+                    intent.putExtra("STOK", stok); // Ensure STOK is passed
+                    intent.putExtra("UPLOAD_SPEED", device.getIp().get(0).getUpspeed());
+                    intent.putExtra("DOWNLOAD_SPEED", device.getIp().get(0).getDownspeed());
+                    v.getContext().startActivity(intent);
+                }
+            });
         }
     }
 

@@ -7,16 +7,16 @@
     android:fitsSystemWindows="false">
 
     <androidx.appcompat.widget.Toolbar
-        android:background="@color/endColor"
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:background="@color/endColor"
         android:elevation="2dp"
         android:paddingTop="15dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:navigationIcon="@drawable/left"
-        app:titleTextColor="@android:color/white"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:titleTextColor="@android:color/white" />
 
     <LinearLayout
         android:background="@color/endColor"

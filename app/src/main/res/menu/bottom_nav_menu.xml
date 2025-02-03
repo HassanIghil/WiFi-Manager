@@ -10,7 +10,7 @@
         android:id="@+id/navigation_settings"
         android:icon="@drawable/ic_settings"
         android:color="#ffffff"
-        android:title="Settings" />
+        android:title="Toolbox" />
 
 
 </menu>

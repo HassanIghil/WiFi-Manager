@@ -2,8 +2,8 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Background color (white) -->
     <solid android:color="@android:color/white" />
-    <!-- Border stroke -->
+    <!-- Border stroke (thinner) -->
     <stroke
-        android:width="1dp"
-        android:color="@android:color/black" />
+        android:width="0.5dp"
+    android:color="@android:color/black" />
 </shape>

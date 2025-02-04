@@ -148,19 +148,19 @@
 
                 </GridLayout>
 
-                <!-- Vertical Divider in the Center (thinner) -->
+                <!-- Vertical Divider in the Center (thinnest and faint) -->
                 <View
                     android:layout_width="0.5dp"
                     android:layout_height="238dp"
                     android:layout_gravity="center"
-                    android:background="@android:color/darker_gray" />
+                    android:background="#E0E0E0" />
 
-                <!-- Horizontal Divider in the Center (thinner) -->
+                <!-- Horizontal Divider in the Center (thinnest and faint) -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.6dp"
                     android:layout_gravity="center"
-                    android:background="@android:color/darker_gray" />
+                    android:background="#E0E0E0" /> <!-- Very light gray -->
 
             </FrameLayout>
 
@@ -175,11 +175,11 @@
                 android:textColor="@android:color/black"
                 android:layout_marginBottom="8dp"/>
 
-            <!-- Divider Above More Tools -->
+            <!-- Divider Above More Tools (thinnest and faint) -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@android:color/darker_gray"
+                android:background="#E0E0E0"
                 android:layout_marginBottom="8dp"/>
 
             <!-- More Tools Item -->
@@ -215,7 +215,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Learn more about Mi Router"
+                        android:text="Learn more about your Router"
                         android:textSize="12sp"
                         android:textColor="@android:color/darker_gray"/>
                 </LinearLayout>
@@ -227,12 +227,12 @@
 
             </LinearLayout>
 
-            <!-- Divider Below More Tools -->
+            <!-- Divider Below More Tools (thinnest and faint) -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@android:color/darker_gray"
-                android:layout_marginTop="8dp"/>
+                android:background="#E0E0E0"
+            android:layout_marginTop="8dp"/>
 
         </LinearLayout>
     </ScrollView>

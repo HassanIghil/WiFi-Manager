@@ -40,12 +40,14 @@ import android.content.Intent;
 public class HomeFragment extends Fragment {
 
     private static final String TAG = "HomeFragment";
-    private static final int REFRESH_INTERVAL = 2000;
+    private static final int REFRESH_INTERVAL = 2000;  // 2 seconds
+    private static final int DEVICE_REFRESH_INTERVAL = 5000;  // 5 seconds
 
     // Fragment state control
     private final AtomicBoolean isFragmentActive = new AtomicBoolean(false);
     private Handler handler;
     private SpeedTestRunnable speedTestRunnable;
+    private DeviceListRunnable deviceListRunnable;
 
     // UI Components
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -63,7 +65,7 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
-    // Weak reference handler implementation
+    // Weak reference handler implementation for speed test
     private static class SpeedTestRunnable implements Runnable {
         private final WeakReference<HomeFragment> fragmentRef;
         private final Handler handler = new Handler(Looper.getMainLooper());
@@ -78,6 +80,29 @@ public class HomeFragment extends Fragment {
             if (fragment != null && fragment.isFragmentActive.get()) {
                 fragment.fetchSpeedTestData();
                 handler.postDelayed(this, REFRESH_INTERVAL);
+            }
+        }
+
+        void clean() {
+            handler.removeCallbacks(this);
+        }
+    }
+
+    // Weak reference handler implementation for device list refresh
+    private static class DeviceListRunnable implements Runnable {
+        private final WeakReference<HomeFragment> fragmentRef;
+        private final Handler handler = new Handler(Looper.getMainLooper());
+
+        DeviceListRunnable(HomeFragment fragment) {
+            this.fragmentRef = new WeakReference<>(fragment);
+        }
+
+        @Override
+        public void run() {
+            HomeFragment fragment = fragmentRef.get();
+            if (fragment != null && fragment.isFragmentActive.get()) {
+                fragment.fetchConnectedDevices(false);  // Automatic refresh without loading
+                handler.postDelayed(this, DEVICE_REFRESH_INTERVAL);
             }
         }
 
@@ -147,7 +172,7 @@ public class HomeFragment extends Fragment {
             intent.putExtra("STOK", STOK); // Make sure STOK is passed here
             startActivity(intent);
         }, STOK);
-        
+
         recyclerView.setAdapter(adapter);
     }
 
@@ -155,7 +180,7 @@ public class HomeFragment extends Fragment {
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             if (isFragmentActive.get()) {
-                fetchConnectedDevices();
+                fetchConnectedDevices(true);  // Manual refresh with loading
             }
         });
     }
@@ -163,8 +188,12 @@ public class HomeFragment extends Fragment {
     private void startPeriodicUpdates() {
         handler = new Handler(Looper.getMainLooper());
         speedTestRunnable = new SpeedTestRunnable(this);
+        deviceListRunnable = new DeviceListRunnable(this);
+
         handler.post(speedTestRunnable);
-        fetchConnectedDevices();
+        handler.post(deviceListRunnable);
+
+        fetchConnectedDevices(true);  // Initial fetch with loading
     }
 
     @Override
@@ -179,6 +208,9 @@ public class HomeFragment extends Fragment {
         if (speedTestRunnable != null) {
             speedTestRunnable.clean();
         }
+        if (deviceListRunnable != null) {
+            deviceListRunnable.clean();
+        }
 
         // Clear Glide resources
         ImageView upArrow = getView().findViewById(R.id.imageView2);
@@ -187,10 +219,13 @@ public class HomeFragment extends Fragment {
         Glide.with(this).clear(downArrow);
     }
 
-    private void fetchConnectedDevices() {
+    private void fetchConnectedDevices(boolean showLoading) {
         if (!isFragmentActive.get()) return;
 
-        swipeRefreshLayout.setRefreshing(true);
+        if (showLoading) {
+            safeRun(() -> swipeRefreshLayout.setRefreshing(true));
+        }
+
         new Thread(() -> {
             try {
                 String urlStr = "http://192.168.31.1/cgi-bin/luci/;stok=" + STOK + "/api/misystem/devicelist";
@@ -222,8 +257,9 @@ public class HomeFragment extends Fragment {
                 updateUI(() -> {
                     adapter.updateDeviceList(devices);
                     calculateAndDisplaySpeeds(devices);
-                    swipeRefreshLayout.setRefreshing(false);
-                    fetchSpeedTestData(); // Fetch speed test data after updating the device list
+                    if (showLoading) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
                 });
 
             } catch (Exception e) {
@@ -241,11 +277,6 @@ public class HomeFragment extends Fragment {
                 String urlStr = "http://192.168.31.1/cgi-bin/luci/;stok=" + STOK + "/api/misystem/status";
                 HttpURLConnection connection = (HttpURLConnection) new URL(urlStr).openConnection();
                 connection.setRequestMethod("GET");
-
-                //if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                   // safeToast("Speed test failed: " + connection.getResponseCode());
-                  //  return;
-                //}
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 StringBuilder response = new StringBuilder();

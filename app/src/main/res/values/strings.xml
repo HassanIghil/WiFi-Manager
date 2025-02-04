@@ -1,4 +1,31 @@
 <resources>
     <string name="app_name">WiFi Manager</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="encryption_types">
+        <item>Mixed (WPA/WPA2-personal)</item>
+        <item>WPA2-personal</item>
+        <item>WPA3-personal</item>
+        <item>Open</item>
+    </string-array>
+
+    <string-array name="wireless_channels">
+        <item>1</item>
+        <item>6</item>
+        <item>11</item>
+        <item>Auto</item>
+    </string-array>
+
+    <string-array name="bandwidth_options">
+        <item>20M</item>
+        <item>40M</item>
+        <item>80M</item>
+        <item>160M</item>
+    </string-array>
+
+    <string-array name="signal_strength_options">
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+    </string-array>
 </resources>

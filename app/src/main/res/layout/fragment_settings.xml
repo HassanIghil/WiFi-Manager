@@ -46,195 +46,185 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp">
 
-                <!-- Grid Layout for Top Section -->
-                <GridLayout
-                    android:id="@+id/grid_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:columnCount="2"
-                    android:rowCount="2">
-
-                    <!-- Wi-Fi Optimization -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_columnWeight="1"
-                        android:layout_rowWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:background="@android:color/white">
-
-                        <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@drawable/optimisation" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Wi-Fi Optimization"
-                            android:textSize="14sp"
-                            android:textColor="@android:color/black"/>
-                    </LinearLayout>
-
-                    <!-- Firewall -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_columnWeight="1"
-                        android:layout_rowWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:background="@android:color/white">
-
-                        <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@drawable/firewall" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Firewall"
-                            android:textSize="14sp"
-                            android:textColor="@android:color/black"/>
-                    </LinearLayout>
-
-                    <!-- Settings -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_columnWeight="1"
-                        android:layout_rowWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:background="@android:color/white">
-
-                        <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@drawable/reglage" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Settings"
-                            android:textSize="14sp"
-                            android:textColor="@android:color/black"/>
-                    </LinearLayout>
-
-                    <!-- Updates -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="120dp"
-                        android:layout_columnWeight="1"
-                        android:layout_rowWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:background="@android:color/white">
-
-                        <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@drawable/mis_a_jour" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Updates"
-                            android:textSize="14sp"
-                            android:textColor="@android:color/black"/>
-                    </LinearLayout>
-
-                </GridLayout>
-
-                <!-- Vertical Divider in the Center (thinnest and faint) -->
-                <View
-                    android:layout_width="0.5dp"
-                    android:layout_height="238dp"
-                    android:layout_gravity="center"
-                    android:background="#E0E0E0" />
-
-                <!-- Horizontal Divider in the Center (thinnest and faint) -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.6dp"
-                    android:layout_gravity="center"
-                    android:background="#E0E0E0" /> <!-- Very light gray -->
-
-            </FrameLayout>
-
-            <!-- Smart Life Section Title -->
-            <TextView
+            <GridLayout
+                android:id="@+id/grid_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Smart Life"
-                android:paddingLeft="10dp"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black"
-                android:layout_marginBottom="8dp"/>
+                android:columnCount="2"
+                android:rowCount="2">
 
-            <!-- Divider Above More Tools (thinnest and faint) -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="#E0E0E0"
-                android:layout_marginBottom="8dp"/>
-
-            <!-- More Tools Item -->
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/wifi_optimization_button"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:background="@android:color/white"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/optimisation" />
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="12dp"
-                android:background="@android:color/white"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/four_circle" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:paddingStart="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="More Tools"
-                        android:textSize="14sp"
-                        android:textColor="@android:color/black"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Learn more about your Router"
-                        android:textSize="12sp"
-                        android:textColor="@android:color/darker_gray"/>
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/next" />
-
-            </LinearLayout>
-
-            <!-- Divider Below More Tools (thinnest and faint) -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="#E0E0E0"
-            android:layout_marginTop="8dp"/>
-
+                android:text="Wi-Fi Optimization"
+                android:textColor="@android:color/black"
+                android:textSize="10sp" />
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="@android:color/white">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/firewall" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Firewall"
+            android:textSize="10sp"
+            android:textColor="@android:color/black"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+    android:layout_columnWeight="1"
+    android:layout_rowWeight="1"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/reglage" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Settings"
+        android:textSize="10sp"
+        android:textColor="@android:color/black"/>
+</LinearLayout>
+
+<LinearLayout
+android:layout_width="0dp"
+android:layout_height="100dp"
+    android:layout_columnWeight="1"
+    android:layout_rowWeight="1"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+<ImageView
+android:layout_width="40dp"
+android:layout_height="40dp"
+android:src="@drawable/mis_a_jour" />
+
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Updates"
+android:textSize="10sp"
+android:textColor="@android:color/black"/>
+    </LinearLayout>
+
+    </GridLayout>
+
+<View
+android:layout_width="0.5dp"
+android:layout_height="200dp"
+    android:layout_gravity="center"
+    android:background="#E0E0E0" />
+
+<View
+android:layout_width="match_parent"
+android:layout_height="0.6dp"
+android:layout_gravity="center"
+android:background="#E0E0E0" />
+
+    </FrameLayout>
+
+<TextView
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Smart Life"
+android:paddingLeft="10dp"
+android:textSize="16sp"
+android:textStyle="bold"
+android:textColor="@android:color/black"
+android:layout_marginBottom="8dp"/>
+
+<View
+android:layout_width="match_parent"
+android:layout_height="0.5dp"
+android:background="#E0E0E0"
+android:layout_marginBottom="8dp"/>
+
+<LinearLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:gravity="center_vertical"
+android:padding="12dp"
+android:background="@android:color/white"
+android:clickable="true"
+android:focusable="true">
+
+<ImageView
+    android:layout_width="24dp"
+    android:layout_height="24dp"
+    android:src="@drawable/four_circle" />
+
+<LinearLayout
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:orientation="vertical"
+    android:paddingStart="12dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="More Tools"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Learn more about your Router"
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray"/>
+</LinearLayout>
+
+<ImageView
+    android:layout_width="24dp"
+    android:layout_height="24dp"
+    android:src="@drawable/next" />
+
+</LinearLayout>
+
+<View
+android:layout_width="match_parent"
+android:layout_height="0.5dp"
+android:background="#E0E0E0"
+android:layout_marginTop="8dp"/>
+
+    </LinearLayout>
     </ScrollView>
 
-</FrameLayout>
+    </FrameLayout>

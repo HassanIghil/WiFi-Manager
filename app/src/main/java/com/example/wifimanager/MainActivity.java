@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private String STOK;
-    private String routerName; // Add this field
+    private String routerName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Retrieve both STOK and router name
         STOK = getIntent().getStringExtra("STOK");
-        routerName = getIntent().getStringExtra("ROUTER_NAME"); // Add this line
+        routerName = getIntent().getStringExtra("ROUTER_NAME");
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {

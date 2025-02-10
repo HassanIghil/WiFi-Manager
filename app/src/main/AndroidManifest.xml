@@ -20,6 +20,18 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Tools.Smart_life"
+            android:exported="false" />
+        <activity
+            android:name=".Tools.Firewall"
+            android:exported="false" />
+        <activity
+            android:name=".Tools.parametres"
+            android:exported="false" />
+        <activity
+            android:name=".Tools.Update"
+            android:exported="false" />
+        <activity
             android:name=".Tools.Optimization"
             android:exported="false" />
         <activity

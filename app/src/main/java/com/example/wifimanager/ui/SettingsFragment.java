@@ -12,6 +12,10 @@ import androidx.fragment.app.Fragment;
 
 import com.example.wifimanager.R;
 import com.example.wifimanager.Tools.Optimization;
+import com.example.wifimanager.Tools.Update;
+import com.example.wifimanager.Tools.Firewall;
+import com.example.wifimanager.Tools.parametres;
+import com.example.wifimanager.Tools.Smart_life;
 
 public class SettingsFragment extends Fragment {
 
@@ -34,12 +38,39 @@ public class SettingsFragment extends Fragment {
             startActivity(intent);
         });
 
+        // Add click listener for the update grid item
+        LinearLayout updateButton = view.findViewById(R.id.update_button);
+        updateButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), Update.class);
+            startActivity(intent);
+        });
+
+        // Add click listener for the firewall grid item
+        LinearLayout firewallButton = view.findViewById(R.id.firewall_button);
+        firewallButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), Firewall.class);
+            startActivity(intent);
+        });
+
+        // Add click listener for the settings grid item
+        LinearLayout settingsButton = view.findViewById(R.id.settings_button);
+        settingsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), parametres.class);
+            startActivity(intent);
+        });
+
+        // Add click listener for the more tools item
+        LinearLayout moreToolsButton = view.findViewById(R.id.more_tools_button);
+        moreToolsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), Smart_life.class);
+            startActivity(intent);
+        });
+
         return view;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d(TAG, "SettingsFragment destroyed");
     }
 }

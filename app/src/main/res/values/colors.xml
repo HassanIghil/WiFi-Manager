@@ -12,6 +12,7 @@
     <color name="navColor">#000030</color>
     <color name="endColor">#1F509A</color>
     <color name="yellow">#F4E0AF</color> <!-- Define accent color -->
-    <color name="green">#A1EEBD</color> <!-- Define green color -->
+    <color name="green">#A1EEBD</color>
+    <color name="orange">#FFA500</color> <!-- Define green color -->
 
 </resources>

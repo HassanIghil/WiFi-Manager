@@ -13,6 +13,7 @@ volley = "1.2.1"
 lombok = "1.18.30"
 swiperefreshlayout = "1.1.0"
 navigationFragment = "2.8.5"
+securityCrypto = "1.0.0"
 
 [libraries]
 hutool = { module = "cn:hutool", version.ref = "hutool" }
@@ -28,6 +29,7 @@ volley = { group = "com.android.volley", name = "volley", version.ref = "volley"
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
+security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -2,6 +2,7 @@ package com.example.wifimanager;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -27,6 +28,12 @@ public class MainActivity extends AppCompatActivity {
         // Retrieve both STOK and router name
         STOK = getIntent().getStringExtra("STOK");
         routerName = getIntent().getStringExtra("ROUTER_NAME");
+
+        if (STOK != null) {
+            Toast.makeText(this, "STOK: " + STOK, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "STOK is null", Toast.LENGTH_LONG).show();
+        }
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {

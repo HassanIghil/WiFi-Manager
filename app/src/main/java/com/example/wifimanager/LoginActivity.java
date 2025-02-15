@@ -3,69 +3,58 @@ package com.example.wifimanager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText passwordInput;
-    private Button loginButton;
+    private static final String TAG = "LoginActivity";
+    private EditText passwordEditText;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Set the activity to full screen
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-
         setContentView(R.layout.activity_login);
 
-        passwordInput = findViewById(R.id.password);
-        loginButton = findViewById(R.id.loginButton);
+        passwordEditText = findViewById(R.id.password);
 
-        loginButton.setOnClickListener(view -> {
-            String password = passwordInput.getText().toString().trim();
+        // Handle login
+        findViewById(R.id.loginButton).setOnClickListener(v -> {
+            String password = passwordEditText.getText().toString();
             if (!password.isEmpty()) {
-                loginToRouter(password);
+                login(password);
             } else {
-                Toast.makeText(this, "Enter your password", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Password is required", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void loginToRouter(String password) {
+    private void login(String password) {
         new Thread(() -> {
             try {
                 String urlStr = "http://192.168.31.1/cgi-bin/luci/api/xqsystem/login";
                 URL url = new URL(urlStr);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
-                connection.setDoOutput(true);
-                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 
-                String params = "username=admin&password=" + password;
-
-                try (OutputStream os = connection.getOutputStream()) {
-                    byte[] input = params.getBytes("utf-8");
-                    os.write(input, 0, input.length);
-                }
+                // Sending login data
+                String data = "username=admin&password=" + password;
+                connection.getOutputStream().write(data.getBytes());
 
                 int responseCode = connection.getResponseCode();
                 if (responseCode != HttpURLConnection.HTTP_OK) {
-                    runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Login failed with response code: " + responseCode, Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Login failed. Response code: " + responseCode, Toast.LENGTH_SHORT).show());
                     return;
                 }
 
@@ -77,18 +66,15 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 reader.close();
 
+                // Parsing response to extract token
                 Gson gson = new Gson();
                 LoginResponse loginResponse = gson.fromJson(response.toString(), LoginResponse.class);
 
-                if (loginResponse.getCode() == 0) {
-                    String token = loginResponse.getToken();
-                    if (token != null && !token.isEmpty()) {
-                        fetchRouterName(token);
-                    } else {
-                        runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Failed to extract token", Toast.LENGTH_SHORT).show());
-                    }
+                if (loginResponse != null && loginResponse.getToken() != null) {
+                    token = loginResponse.getToken();
+                    fetchRouterName(token);
                 } else {
-                    runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Login failed: Invalid credentials or response error", Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Login failed. No token received.", Toast.LENGTH_SHORT).show());
                 }
 
             } catch (Exception e) {
@@ -120,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 reader.close();
 
+                // Parsing router name from the response
                 Gson gson = new Gson();
                 RouterNameResponse routerNameResponse = gson.fromJson(response.toString(), RouterNameResponse.class);
 
@@ -127,8 +114,8 @@ public class LoginActivity extends AppCompatActivity {
                     String routerName = routerNameResponse.getName();
                     runOnUiThread(() -> {
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.putExtra("ROUTER_NAME", routerName);
-                        intent.putExtra("STOK", token);
+                        intent.putExtra("ROUTER_NAME", routerName); // Pass router name
+                        intent.putExtra("STOK", token); // Pass token
                         startActivity(intent);
                         finish(); // Finish LoginActivity to prevent going back to it
                     });
@@ -142,4 +129,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         }).start();
     }
+
+
+
+
 }

@@ -1,8 +1,12 @@
 package com.example.wifimanager.ui;
 
+import android.content.Context;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -164,6 +168,7 @@ public class HomeFragment extends Fragment {
             STOK = getArguments().getString("STOK");
         }
 
+        // Pass the context (this fragment's context) as the fourth argument
         adapter = new DeviceAdapter(new ArrayList<>(), device -> {
             Intent intent = new Intent(getActivity(), DeviceDetailsActivity.class);
             intent.putExtra("DEVICE_NAME", device.getName());
@@ -171,7 +176,7 @@ public class HomeFragment extends Fragment {
             intent.putExtra("DEVICE_MAC", device.getMac());
             intent.putExtra("STOK", STOK); // Make sure STOK is passed here
             startActivity(intent);
-        }, STOK);
+        }, STOK, requireContext()); // Add requireContext() as the fourth argument
 
         recyclerView.setAdapter(adapter);
     }
@@ -252,7 +257,26 @@ public class HomeFragment extends Fragment {
                 }
 
                 List<MiWifiDeviceDO> devices = deviceListResponse.getList();
-                Collections.sort(devices, Comparator.comparingLong(MiWifiDeviceDO::getConnectionTime));
+
+                // Get the IP address of the current device
+                String currentDeviceIp = getCurrentDeviceIp();
+                Log.d("CurrentDeviceIP", "Current Device IP: " + currentDeviceIp); // Log the current device's IP
+                // Sort the list to prioritize the current device
+                Collections.sort(devices, (device1, device2) -> {
+                    String ip1 = device1.getIp().get(0).getIp(); // Assuming each device has at least one IP
+                    String ip2 = device2.getIp().get(0).getIp();
+
+                    boolean isDevice1Current = ip1.equalsIgnoreCase(currentDeviceIp);
+                    boolean isDevice2Current = ip2.equalsIgnoreCase(currentDeviceIp);
+
+                    if (isDevice1Current) {
+                        return -1; // Current device comes first
+                    } else if (isDevice2Current) {
+                        return 1; // Current device comes first
+                    } else {
+                        return 0; // Maintain the original order for other devices
+                    }
+                });
 
                 updateUI(() -> {
                     adapter.updateDeviceList(devices);
@@ -267,6 +291,17 @@ public class HomeFragment extends Fragment {
                 safeRun(() -> swipeRefreshLayout.setRefreshing(false));
             }
         }).start();
+    }
+
+    private String getCurrentDeviceIp() {
+        WifiManager wifiManager = (WifiManager) requireContext().getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        int ipAddress = wifiInfo.getIpAddress();
+        return String.format("%d.%d.%d.%d",
+                (ipAddress & 0xff),
+                (ipAddress >> 8 & 0xff),
+                (ipAddress >> 16 & 0xff),
+                (ipAddress >> 24 & 0xff));
     }
 
     private void fetchSpeedTestData() {

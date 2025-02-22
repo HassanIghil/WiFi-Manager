@@ -1,0 +1,23 @@
+<resources>
+    <!-- Toolbar -->
+    <dimen name="toolbar_text_size">20sp</dimen>
+
+    <!-- Update Image Section -->
+    <dimen name="update_image_container_height">250dp</dimen>
+    <dimen name="update_image_size">120dp</dimen>
+
+    <!-- Router Info Section -->
+    <dimen name="router_info_container_height">340dp</dimen>
+    <dimen name="router_info_margin_top">30dp</dimen>
+    <dimen name="router_info_padding_start">10dp</dimen>
+    <dimen name="router_info_padding_end">20dp</dimen>
+    <dimen name="router_icon_size">20dp</dimen>
+    <dimen name="router_text_padding_start">10dp</dimen>
+    <dimen name="router_name_text_size">18sp</dimen>
+    <dimen name="router_version_text_size">15sp</dimen>
+
+    <!-- Update Button -->
+    <dimen name="update_button_height">60dp</dimen>
+    <dimen name="update_button_margin">10dp</dimen>
+    <dimen name="update_button_text_size">16sp</dimen>
+</resources>

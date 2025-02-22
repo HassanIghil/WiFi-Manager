@@ -2,7 +2,6 @@ package com.example.wifimanager.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +19,8 @@ import com.example.wifimanager.Tools.Smart_life;
 public class SettingsFragment extends Fragment {
 
     private static final String TAG = "SettingsFragment";
+    private static String STOK = "";
+    private String routerName;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -30,6 +31,13 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
+
+        // Retrieve the router's name from the arguments and token
+        // Inside onCreateView
+        if (getArguments() != null) {
+            routerName = getArguments().getString("ROUTER_NAME");
+            STOK = getArguments().getString("STOK"); // Retrieve the token
+        }
 
         // Find the LinearLayout and set a click listener
         LinearLayout wifiOptimizationButton = view.findViewById(R.id.wifi_optimization_button);
@@ -42,6 +50,8 @@ public class SettingsFragment extends Fragment {
         LinearLayout updateButton = view.findViewById(R.id.update_button);
         updateButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), Update.class);
+            intent.putExtra("ROUTER_NAME", routerName); // Pass the router's name
+            intent.putExtra("STOK", STOK); // Pass the token
             startActivity(intent);
         });
 

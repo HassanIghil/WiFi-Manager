@@ -13,7 +13,6 @@ import com.example.wifimanager.ui.HomeFragment;
 import com.example.wifimanager.ui.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -45,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.navigation_settings:
                     selectedFragment = new SettingsFragment();
+                    Bundle args = new Bundle();
+                    args.putString("ROUTER_NAME", routerName); // Pass the router's name
+                    args.putString("STOK", STOK); // Pass the token
+                    selectedFragment.setArguments(args);
                     break;
             }
             if (selectedFragment != null) {
@@ -69,9 +72,4 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "Error loading fragment", e);
         }
     }
-
-
-
-    
-
 }

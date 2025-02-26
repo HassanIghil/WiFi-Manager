@@ -1,5 +1,6 @@
 package com.example.wifimanager;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -24,16 +25,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Retrieve both STOK and router name
+        // Retrieve STOK and router name from the Intent
         STOK = getIntent().getStringExtra("STOK");
         routerName = getIntent().getStringExtra("ROUTER_NAME");
 
+        // If STOK and router name are null, get them from SharedPreferences
+        if (STOK == null || routerName == null) {
+            SharedPreferences sharedPreferences = getSharedPreferences("MyWiFiApp", MODE_PRIVATE);
+            STOK = sharedPreferences.getString("stok", null);
+            routerName = sharedPreferences.getString("ROUTER_NAME", null);
+        }
+
+        // Show Toast for debugging (you can remove this later)
         if (STOK != null) {
             Toast.makeText(this, "STOK: " + STOK, Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this, "STOK is null", Toast.LENGTH_LONG).show();
         }
 
+        // Bottom Navigation Setup
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             Fragment selectedFragment = null;
@@ -56,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
-        // Load the default fragment
+        // Load the default fragment if no fragment has been saved
         if (savedInstanceState == null) {
             bottomNavigationView.setSelectedItemId(R.id.navigation_home);
         }

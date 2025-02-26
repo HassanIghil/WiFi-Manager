@@ -1,6 +1,7 @@
 package com.example.wifimanager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
@@ -72,6 +73,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (loginResponse != null && loginResponse.getToken() != null) {
                     token = loginResponse.getToken();
+                    // Now fetch the router name after successful login
                     fetchRouterName(token);
                 } else {
                     runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Login failed. No token received.", Toast.LENGTH_SHORT).show());
@@ -112,6 +114,16 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (routerNameResponse != null && routerNameResponse.getName() != null) {
                     String routerName = routerNameResponse.getName();
+
+                    // Save login status, token, and router name to SharedPreferences
+                    SharedPreferences sharedPreferences = getSharedPreferences("MyWiFiApp", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("stok", token); // Save token
+                    editor.putString("ROUTER_NAME", routerName); // Save router name
+                    editor.putBoolean("isLoggedIn", true); // Save login status
+                    editor.apply();
+
+                    // Navigate to MainActivity
                     runOnUiThread(() -> {
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         intent.putExtra("ROUTER_NAME", routerName); // Pass router name
@@ -129,8 +141,4 @@ public class LoginActivity extends AppCompatActivity {
             }
         }).start();
     }
-
-
-
-
 }

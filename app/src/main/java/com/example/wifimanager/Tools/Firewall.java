@@ -1,6 +1,5 @@
 package com.example.wifimanager.Tools;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -27,7 +26,7 @@ public class Firewall extends AppCompatActivity {
 
     private int originalBackgroundColor;
     private int originalToolbarColor;
-    private int originalStatusBarColor; // Store original status bar color
+    private int originalStatusBarColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +64,10 @@ public class Firewall extends AppCompatActivity {
         // Store original background, toolbar, and status bar colors
         originalBackgroundColor = getResources().getColor(R.color.topColor);
         originalToolbarColor = getResources().getColor(R.color.topColor);
-        originalStatusBarColor = getWindow().getStatusBarColor(); // Get current status bar color
+        originalStatusBarColor = getWindow().getStatusBarColor();
 
-        // Load initial Lottie animation
-        lottieAnimationView.setAnimationFromUrl("https://lottie.host/aeb46360-6735-46c0-b6b8-b79dba7374e2/CLYETb4jzE.lottie");
+        // Load initial Lottie animation from local JSON
+        lottieAnimationView.setAnimation(R.raw.firewall_ena);
         lottieAnimationView.playAnimation();
 
         // Set initial visibility
@@ -82,7 +81,7 @@ public class Firewall extends AppCompatActivity {
     private void toggleFirewallState() {
         if (turnOffButton.getText().toString().equals("Turn Off")) {
             // Switch to "Turn On" state
-            lottieAnimationView.setAnimationFromUrl("https://lottie.host/6bd8f875-105d-4973-8454-67ed8c8a0844/XBENMNFUka.lottie");
+            lottieAnimationView.setAnimation(R.raw.firewall_dis);
             lottieAnimationView.playAnimation();
 
             // Hide existing views
@@ -101,13 +100,13 @@ public class Firewall extends AppCompatActivity {
             int orangeColor = getResources().getColor(R.color.orange);
             animationContainer.setBackgroundColor(orangeColor);
             toolbar.setBackgroundColor(orangeColor);
-            getWindow().setStatusBarColor(orangeColor); // Change notch/status bar color
+            getWindow().setStatusBarColor(orangeColor);
 
             // Update button text
             turnOffButton.setText("Turn On");
         } else {
             // Switch back to "Turn Off" state
-            lottieAnimationView.setAnimationFromUrl("https://lottie.host/aeb46360-6735-46c0-b6b8-b79dba7374e2/CLYETb4jzE.lottie");
+            lottieAnimationView.setAnimation(R.raw.firewall_ena);
             lottieAnimationView.playAnimation();
 
             // Show existing views
@@ -123,7 +122,7 @@ public class Firewall extends AppCompatActivity {
             // Revert colors to original
             animationContainer.setBackgroundColor(originalBackgroundColor);
             toolbar.setBackgroundColor(originalToolbarColor);
-            getWindow().setStatusBarColor(originalStatusBarColor); // Revert status bar color
+            getWindow().setStatusBarColor(originalStatusBarColor);
 
             // Update button text
             turnOffButton.setText("Turn Off");

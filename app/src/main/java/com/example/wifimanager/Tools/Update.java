@@ -154,6 +154,12 @@ public class Update extends AppCompatActivity {
 
                     // Parse the JSON response
                     JSONObject jsonResponse = new JSONObject(response.toString());
+
+                    // Check for code 1504
+                    if (jsonResponse.has("code") && jsonResponse.getInt("code") == 1504) {
+                        return "1504";
+                    }
+
                     if (jsonResponse.has("version")) {
                         return jsonResponse.getString("version");
                     } else {
@@ -178,6 +184,7 @@ public class Update extends AppCompatActivity {
             }
         }
 
+
         @Override
         protected void onPostExecute(String result) {
             // Hide Lottie animation
@@ -187,6 +194,12 @@ public class Update extends AppCompatActivity {
                 if (result.equals("401")) {
                     // Handle invalid token error
                     Toast.makeText(Update.this, "Invalid token. Please check your connection.", Toast.LENGTH_SHORT).show();
+                } else if (result.equals("1504")) {
+                    // If code is 1504, show the message and set the version to the latest available
+                    Toast.makeText(Update.this, "Couldn't check for updates", Toast.LENGTH_SHORT).show();
+                    versionTextView.setText("Version 3.0.45 | stable");
+                    routerInfoSection.setVisibility(View.VISIBLE);
+                    updateButton.setVisibility(View.VISIBLE);
                 } else {
                     // Display the fetched version in the UI
                     versionTextView.setText("Version: " + result + " | stable");
@@ -199,5 +212,6 @@ public class Update extends AppCompatActivity {
                 Toast.makeText(Update.this, "Failed to fetch version", Toast.LENGTH_SHORT).show();
             }
         }
+
     }
 }

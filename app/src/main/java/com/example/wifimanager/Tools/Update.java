@@ -76,7 +76,7 @@ public class Update extends AppCompatActivity {
 
         // Display the router's name if available
         if (routerName != null) {
-            TextView routerNameTextView = findViewById(R.id.routername); // Ensure this ID exists in your layout
+            TextView routerNameTextView = findViewById(R.id.routername);
             routerNameTextView.setText(routerName);
         }
 
@@ -121,14 +121,13 @@ public class Update extends AppCompatActivity {
             updateButton.setVisibility(View.GONE);
         }
 
-
         @Override
         protected String doInBackground(Void... voids) {
             HttpURLConnection urlConnection = null;
             try {
                 // Define the API URL
                 String apiUrl = "http://192.168.31.1/cgi-bin/luci/;stok=" + STOK + "/api/xqsystem/check_rom_update";
-                Log.d("UpdateActivity", "API URL: " + apiUrl); // Log the API URL
+                Log.d("UpdateActivity", "API URL: " + apiUrl);
 
                 // Open connection to the API
                 URL url = new URL(apiUrl);
@@ -139,10 +138,9 @@ public class Update extends AppCompatActivity {
 
                 // Check if the connection is successful
                 int responseCode = urlConnection.getResponseCode();
-                Log.d("UpdateActivity", "Response Code: " + responseCode); // Log the response code
+                Log.d("UpdateActivity", "Response Code: " + responseCode);
 
                 if (responseCode == HttpURLConnection.HTTP_OK) {
-                    // Read the API response
                     InputStreamReader inputStreamReader = new InputStreamReader(urlConnection.getInputStream());
                     StringBuilder response = new StringBuilder();
                     int data;
@@ -150,10 +148,7 @@ public class Update extends AppCompatActivity {
                         response.append((char) data);
                     }
 
-                    // Log the raw JSON response for debugging
                     Log.d("UpdateActivity", "API Response: " + response.toString());
-
-                    // Parse the JSON response
                     JSONObject jsonResponse = new JSONObject(response.toString());
 
                     // Check for code 1504
@@ -168,7 +163,6 @@ public class Update extends AppCompatActivity {
                         return null;
                     }
                 } else if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                    // Handle invalid token error
                     Log.e("UpdateActivity", "Invalid token (401)");
                     return "401";
                 } else {
@@ -180,39 +174,32 @@ public class Update extends AppCompatActivity {
                 return null;
             } finally {
                 if (urlConnection != null) {
-                    urlConnection.disconnect(); // Close the connection
+                    urlConnection.disconnect();
                 }
             }
         }
 
-
         @Override
         protected void onPostExecute(String result) {
-            // Hide Lottie animation
             lottieAnimationView.setVisibility(View.GONE);
 
             if (result != null) {
                 if (result.equals("401")) {
-                    // Handle invalid token error
                     Toast.makeText(Update.this, "Invalid token. Please check your connection.", Toast.LENGTH_SHORT).show();
+                    versionTextView.setText("Version: Unknown | Not connected");
                 } else if (result.equals("1504")) {
-                    // If code is 1504, show the message and set the version to the latest available
                     Toast.makeText(Update.this, "Couldn't check for updates", Toast.LENGTH_SHORT).show();
                     versionTextView.setText("Version 3.0.45 | stable");
-                    routerInfoSection.setVisibility(View.VISIBLE);
-                    updateButton.setVisibility(View.VISIBLE);
                 } else {
-                    // Display the fetched version in the UI
                     versionTextView.setText("Version: " + result + " | stable");
-
-                    // Show routerInfoSection and updateButton
-                    routerInfoSection.setVisibility(View.VISIBLE);
-                    updateButton.setVisibility(View.VISIBLE);
                 }
             } else {
-                Toast.makeText(Update.this, "Failed to fetch version", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Update.this, "Couldn't check for updates", Toast.LENGTH_SHORT).show();
+                versionTextView.setText("Version 3.0.45 | check later for updates");
             }
-        }
 
+            routerInfoSection.setVisibility(View.VISIBLE);
+            updateButton.setVisibility(View.VISIBLE);
+        }
     }
 }

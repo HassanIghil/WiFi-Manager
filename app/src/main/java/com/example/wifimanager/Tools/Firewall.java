@@ -129,6 +129,7 @@ public class Firewall extends AppCompatActivity {
         }
     }
 
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();

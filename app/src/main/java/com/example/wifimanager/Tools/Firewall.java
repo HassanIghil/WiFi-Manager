@@ -1,5 +1,6 @@
 package com.example.wifimanager.Tools;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +28,7 @@ public class Firewall extends AppCompatActivity {
     private int originalBackgroundColor;
     private int originalToolbarColor;
     private int originalStatusBarColor;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,17 @@ public class Firewall extends AppCompatActivity {
 
         // Toggle button click listener
         turnOffButton.setOnClickListener(v -> toggleFirewallState());
+
+
+        //sharedpref
+
+        sharedPreferences = getSharedPreferences("fire_stat", MODE_PRIVATE);
+
+        boolean firewallEnabled = sharedPreferences.getBoolean("firewall_enabled", true);
+        if (!firewallEnabled) {
+            toggleFirewallState(); // Call toggleFirewallState to update the UI
+        }
+
     }
 
     private void toggleFirewallState() {
@@ -83,6 +96,7 @@ public class Firewall extends AppCompatActivity {
             // Switch to "Turn On" state
             lottieAnimationView.setAnimation(R.raw.firewall_dis);
             lottieAnimationView.playAnimation();
+            sharedPreferences.edit().putBoolean("firewall_enabled", false).apply();
 
             // Hide existing views
             gifTextView1.setVisibility(View.GONE);
@@ -97,7 +111,7 @@ public class Firewall extends AppCompatActivity {
             smallTextView.setVisibility(View.VISIBLE);
 
             // Change background, toolbar, and status bar color to orange
-            int orangeColor = getResources().getColor(R.color.orange);
+            int orangeColor = getResources().getColor(R.color.red);
             animationContainer.setBackgroundColor(orangeColor);
             toolbar.setBackgroundColor(orangeColor);
             getWindow().setStatusBarColor(orangeColor);
@@ -108,6 +122,7 @@ public class Firewall extends AppCompatActivity {
             // Switch back to "Turn Off" state
             lottieAnimationView.setAnimation(R.raw.firewall_ena);
             lottieAnimationView.playAnimation();
+            sharedPreferences.edit().putBoolean("firewall_enabled", true).apply();
 
             // Show existing views
             gifTextView1.setVisibility(View.VISIBLE);
@@ -135,4 +150,5 @@ public class Firewall extends AppCompatActivity {
         onBackPressed();
         return true;
     }
+
 }

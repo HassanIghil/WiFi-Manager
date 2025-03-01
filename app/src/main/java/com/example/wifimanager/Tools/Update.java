@@ -186,12 +186,12 @@ public class Update extends AppCompatActivity {
             if (result != null) {
                 if (result.equals("401")) {
                     Toast.makeText(Update.this, "Invalid token. Please check your connection.", Toast.LENGTH_SHORT).show();
-                    versionTextView.setText("Version: Unknown | Not connected");
+                    versionTextView.setText("Version 3.0.45 | check later for updates");
                 } else if (result.equals("1504")) {
                     Toast.makeText(Update.this, "Couldn't check for updates", Toast.LENGTH_SHORT).show();
                     versionTextView.setText("Version 3.0.45 | stable");
                 } else {
-                    versionTextView.setText("Version: " + result + " | stable");
+                    versionTextView.setText("Version 3.0.45 | check later for updates");
                 }
             } else {
                 Toast.makeText(Update.this, "Couldn't check for updates", Toast.LENGTH_SHORT).show();

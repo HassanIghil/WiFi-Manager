@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WiFi Manager</string>
+    <string name="app_name">MiLink</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string-array name="encryption_types">
@@ -8,6 +8,9 @@
         <item>WPA3-personal</item>
         <item>Open</item>
     </string-array>
+
+    <string name="status_safe"><font color="#FFFFFF">Status</font> : <font color="#00FF00">Safe</font></string>
+    <string name="status_not_safe"><font color="#FFFFFF">Status</font> : <font color="#FF0000">Not safe</font></string>
 
 
 

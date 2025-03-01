@@ -122,21 +122,24 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginTop="10dp"
-        android:layout_height="wrap_content"
+        android:layout_height="90dp"
         android:orientation="horizontal"
-        android:weightSum="3">
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:weightSum="4">
 
-        <!-- First Icon with Text -->
+        <!-- First Icon (Left Aligned) -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginLeft="10dp"
-            android:gravity="center">
+            android:gravity="center"
+            android:layout_weight="1">
 
             <ImageView
+                android:id="@+id/qos_icon"
                 android:src="@drawable/qos"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
@@ -151,15 +154,40 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
-        <!-- Second Icon with Text -->
+        <!-- Second Icon (Centered) -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:layout_weight="1">
 
             <ImageView
+                android:id="@+id/aceess_icon"
+                android:src="@drawable/web_block"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:contentDescription="Internet Access"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Internet Access"
+                android:textColor="@android:color/black"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Third Icon (Centered) -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/block_icon"
                 android:src="@drawable/block"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
@@ -168,22 +196,22 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Add to BlockList"
+                android:text="Block"
                 android:textSize="12sp"
                 android:textColor="@android:color/black"
                 android:gravity="center"/>
         </LinearLayout>
 
-        <!-- Third Icon with Text -->
+        <!-- Fourth Icon (Right Aligned) -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginRight="10dp"
-            android:gravity="center">
+            android:gravity="center"
+            android:layout_weight="1">
 
             <ImageView
+                android:id="@+id/notification_icon"
                 android:src="@drawable/notification"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
@@ -197,7 +225,9 @@
                 android:textColor="@android:color/black"
                 android:gravity="center"/>
         </LinearLayout>
-
     </LinearLayout>
+
+
+
 
 </LinearLayout>

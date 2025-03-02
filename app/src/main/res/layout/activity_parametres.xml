@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:background="@color/white"
     android:gravity="top"
-    android:id="@+id/main"> <!-- Add this line -->
+    android:id="@+id/main">
 
     <!-- Toolbar with Back Arrow -->
     <androidx.appcompat.widget.Toolbar
@@ -28,6 +28,238 @@
             android:textSize="20sp" />
     </androidx.appcompat.widget.Toolbar>
 
-    <!-- Add your settings activity content here -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:orientation="vertical">
+
+            <!-- Wi-Fi Settings -->
+            <LinearLayout
+                android:id="@+id/wifi_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/wifi_icon"
+                    android:layout_marginEnd="5dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Wi-Fi settings"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:layout_weight="1"/>
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/next" />
+
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="0.6dp" android:background="@color/light_gray"/>
+
+
+            <!-- Network Settings -->
+            <LinearLayout
+                android:id="@+id/network_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/net_settings"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="5dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Network settings"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:layout_weight="1"/>
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/next" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="20dp" android:background="@color/light_gray"/>
+
+            <!-- Reboot Router -->
+            <LinearLayout
+                android:id="@+id/reboot_router"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/reboot"
+                    android:layout_marginEnd="5dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reboot router"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:layout_weight="1"/>
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/next" />            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="20dp" android:background="@color/light_gray"/>
+            <!-- Hardeware -->
+            <LinearLayout
+                android:id="@+id/hardware"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/hardware"
+                    android:layout_marginEnd="5dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hardware &amp; System"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:layout_weight="1"/>
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/next" />            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="20dp" android:background="@color/light_gray"/>
+
+            <!-- Notification -->
+            <LinearLayout
+                android:id="@+id/notification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/notification"
+                    android:layout_marginEnd="5dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Notifications"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:layout_weight="1"/>
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/next" />
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="0.6dp" android:background="@color/light_gray"/>
+
+
+            <!-- Region -->
+            <LinearLayout
+                android:id="@+id/region"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/world"
+                    android:layout_marginEnd="5dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Language &amp; Region"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:layout_weight="1"/>
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/next" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="20dp" android:background="@color/light_gray"/>
+
+            <!-- About router -->
+            <LinearLayout
+                android:id="@+id/about_router"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/about"
+                    android:layout_marginEnd="5dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="About router"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:layout_weight="1"/>
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/next" />
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="0.6dp" android:background="@color/light_gray"/>
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

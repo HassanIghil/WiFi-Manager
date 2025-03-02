@@ -20,6 +20,27 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Settings_Components.about_router_settings"
+            android:exported="false" />
+        <activity
+            android:name=".Settings_Components.region_settings"
+            android:exported="false" />
+        <activity
+            android:name=".Settings_Components.notification_settings"
+            android:exported="false" />
+        <activity
+            android:name=".Settings_Components.hardware_settings"
+            android:exported="false" />
+        <activity
+            android:name=".Settings_Components.reboot_settings"
+            android:exported="false" />
+        <activity
+            android:name=".Settings_Components.network_settings"
+            android:exported="false" />
+        <activity
+            android:name=".Settings_Components.wifi_settings"
+            android:exported="false" />
+        <activity
             android:name=".Tools.Smart_life"
             android:exported="false" />
         <activity
@@ -50,10 +71,10 @@
             android:theme="@style/AppTheme.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>

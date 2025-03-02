@@ -13,7 +13,6 @@
     <string name="status_not_safe"><font color="#FFFFFF">Status</font> : <font color="#FF0000">Not safe</font></string>
 
 
-
     <string-array name="wireless_channels">
         <item>1</item>
         <item>6</item>

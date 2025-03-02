@@ -15,5 +15,6 @@
     <color name="green">#A1EEBD</color>
     <color name="orange">#FFA500</color> <!-- Define green color -->
     <color name="red">#FF0000</color>
+    <color name="light_gray">#E4E4E4</color>
 
 </resources>

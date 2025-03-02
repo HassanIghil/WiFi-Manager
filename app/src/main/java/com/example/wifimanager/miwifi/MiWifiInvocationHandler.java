@@ -12,7 +12,7 @@ import cn.hutool.core.util.StrUtil;
 
 
 public class MiWifiInvocationHandler implements InvocationHandler {
-    private MiWifiApi api;
+    private final MiWifiApi api;
     public MiWifiInvocationHandler(MiWifiApi api){
         this.api = api;
     }

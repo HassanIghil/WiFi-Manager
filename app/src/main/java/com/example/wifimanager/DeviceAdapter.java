@@ -25,8 +25,8 @@ public class DeviceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private List<MiWifiDeviceDO> deviceList;
     private int connectedDevicesCount;
     private final OnItemClickListener listener;
-    private String stok;
-    private Context context;
+    private final String stok;
+    private final Context context;
 
     public interface OnItemClickListener {
         void onItemClick(MiWifiDeviceDO device);

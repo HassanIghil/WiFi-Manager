@@ -20,13 +20,13 @@ public interface MiWifiService {
      * 所有在线设备
      * @return 在线设备。
      */
-    public List<MiWifiDevice> onlineDevice();
+    List<MiWifiDevice> onlineDevice();
 
     /**
      * 路由器名称与位置
      * @return 名称与位置
      */
-    public MiWifiRouterName routerName();
+    MiWifiRouterName routerName();
 
     /**
      * 设置路由器名称与位置
@@ -34,46 +34,46 @@ public interface MiWifiService {
      * @param locale 位置
      * @return
      */
-    public boolean setRouterName(String name, String locale);
+    boolean setRouterName(String name, String locale);
 
     /**
      * 获取系统时间
      * @return 路由器系统时间
      */
-    public ZonedDateTime sysTime();
+    ZonedDateTime sysTime();
 
     /**
      * 允许连接互联网。
      * @param mac mac地址。
      * @return 是否设置成功
      */
-    public boolean allowWan(String mac);
+    boolean allowWan(String mac);
 
     /**
      * 禁止连接互联网
      * @param mac mac地址
      * @return 是否设置成功
      */
-    public boolean forbidWan(String mac);
+    boolean forbidWan(String mac);
 
     /**
      * 设置路由器系统时间
      * @param time 时间
      * @return 是否设置成功
      */
-    public boolean setSysTime(ZonedDateTime time);
+    boolean setSysTime(ZonedDateTime time);
 
     /**
      * 允许连接wifi
      * @param mac mac地址
      * @return 是否设置成功
      */
-    public boolean allowConnWifi(String mac);
+    boolean allowConnWifi(String mac);
 
     /**
      * 禁止连接wifi
      * @param mac mac地址
      * @return 是否设置成功。
      */
-    public boolean forbidConnWifi(String mac);
+    boolean forbidConnWifi(String mac);
 }

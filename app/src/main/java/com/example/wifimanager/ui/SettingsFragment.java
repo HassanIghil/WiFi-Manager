@@ -59,6 +59,7 @@ public class SettingsFragment extends Fragment {
         LinearLayout firewallButton = view.findViewById(R.id.firewall_button);
         firewallButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), Firewall.class);
+            intent.putExtra("STOK", STOK); // Pass the token
             startActivity(intent);
         });
 

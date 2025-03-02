@@ -414,7 +414,7 @@ public class HomeFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
-// Refresh firewall state
+            // Refresh firewall state
             checkFirewallState();
         }
     }

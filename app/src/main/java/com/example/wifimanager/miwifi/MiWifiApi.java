@@ -17,19 +17,19 @@ public interface MiWifiApi {
      * 路由器登录
      * @return
      */
-    public MiWifiLoginDO login();
+    MiWifiLoginDO login();
 
     /**
      * 在线设备
      * @return
      */
-    public MiWifiDevicelistDO onlineDevice();
+    MiWifiDevicelistDO onlineDevice();
 
     /**
      * 路由器名称与位置。
      * @return
      */
-    public MiWifiRouterNameDO routerName();
+    MiWifiRouterNameDO routerName();
 
     /**
      * 设置路由器名称与位置
@@ -37,20 +37,20 @@ public interface MiWifiApi {
      * @param locale 位置
      * @return
      */
-    public MiWifiBaseDO setRouterName(String name, String locale);
+    MiWifiBaseDO setRouterName(String name, String locale);
 
     /**
      * 路由器系统时间
      * @return 系统时间
      */
-    public MiWifiTimeDO sysTime();
+    MiWifiTimeDO sysTime();
 
     /**
      * 设置路由器系统时间
      * @param time 时间
      * @return
      */
-    public MiWifiBaseDO setSysTime(ZonedDateTime time);
+    MiWifiBaseDO setSysTime(ZonedDateTime time);
 
     /**
      * 设置mac过滤
@@ -58,7 +58,7 @@ public interface MiWifiApi {
      * @param wan 是否允许访问互联网。
      * @return
      */
-    public MiWifiBaseDO setMacFilter(String mac, boolean wan);
+    MiWifiBaseDO setMacFilter(String mac, boolean wan);
 
     /**
      * 设置wifi过滤模式
@@ -66,13 +66,13 @@ public interface MiWifiApi {
      * @param blackMode 是否为黑名单模式
      * @return
      */
-    public MiWifiBaseDO setWifiFilter(boolean enable, boolean blackMode);
+    MiWifiBaseDO setWifiFilter(boolean enable, boolean blackMode);
 
     /**
      * 路由器状态
      * @return
      */
-    public MiWifiStatusDO status();
+    MiWifiStatusDO status();
 
     /**
      * 设置设备状态。
@@ -82,6 +82,6 @@ public interface MiWifiApi {
      *               当isBlack 为false时 此项为true则表明该mac在白名单中。
      * @return
      */
-    public MiWifiBaseDO editDevice(String mac, boolean isblack, boolean active);
-    public MiWifiMacFilterInfoDO macFilterInfo(boolean isBlackList);
+    MiWifiBaseDO editDevice(String mac, boolean isblack, boolean active);
+    MiWifiMacFilterInfoDO macFilterInfo(boolean isBlackList);
 }

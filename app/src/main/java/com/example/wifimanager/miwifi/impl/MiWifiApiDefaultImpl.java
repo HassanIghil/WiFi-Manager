@@ -32,10 +32,10 @@
     import java.util.Map;
 
     public class MiWifiApiDefaultImpl implements MiWifiApi {
-        private String adminUrl;
+        private final String adminUrl;
         private String token;
-        private String username;
-        private String passwd;
+        private final String username;
+        private final String passwd;
 
 
         public MiWifiApiDefaultImpl(String url, String username, String passwd) {

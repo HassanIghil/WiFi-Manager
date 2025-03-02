@@ -16,6 +16,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.example.wifimanager.R;
 
 public class Firewall extends AppCompatActivity {
+    private static String STOK;
 
     private LottieAnimationView lottieAnimationView;
     private ImageView innerImageView;
@@ -37,6 +38,11 @@ public class Firewall extends AppCompatActivity {
 
         // Set up toolbar with back arrow
         toolbar = findViewById(R.id.toolbar);
+
+        //Stok Token
+        STOK = getIntent().getStringExtra("STOK");
+
+
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

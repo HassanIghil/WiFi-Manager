@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -330,13 +331,13 @@ public class MiWifi implements MiWifiService {
                 StringBuilder postData = new StringBuilder();
                 for (Map.Entry<String, String> entry : params.entrySet()) {
                     if (postData.length() > 0) postData.append('&');
-                    postData.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+                    postData.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
                     postData.append('=');
-                    postData.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+                    postData.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
                 }
 
                 // Send the POST data
-                connection.getOutputStream().write(postData.toString().getBytes("UTF-8"));
+                connection.getOutputStream().write(postData.toString().getBytes(StandardCharsets.UTF_8));
 
                 // Get the response
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));

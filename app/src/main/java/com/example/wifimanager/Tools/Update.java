@@ -104,11 +104,14 @@ public class Update extends AppCompatActivity {
     }
 
     public void update_click() {
+        clicks++;
         Toast.makeText(this, "Still no Updates...", Toast.LENGTH_SHORT).show();
+        versionTextView.setText("Version 3.0.45 | stable");
     }
 
     public void update_click_more() {
         Toast.makeText(this, "Relax, if there's an update, we'll let you know", Toast.LENGTH_SHORT).show();
+        versionTextView.setText("Version 3.0.45 | stable");
     }
 
     private class FetchRouterVersionTask extends AsyncTask<Void, Void, String> {
@@ -148,7 +151,7 @@ public class Update extends AppCompatActivity {
                         response.append((char) data);
                     }
 
-                    Log.d("UpdateActivity", "API Response: " + response.toString());
+                    Log.d("UpdateActivity", "API Response: " + response);
                     JSONObject jsonResponse = new JSONObject(response.toString());
 
                     // Check for code 1504
@@ -187,15 +190,23 @@ public class Update extends AppCompatActivity {
                 if (result.equals("401")) {
                     Toast.makeText(Update.this, "Invalid token. Please check your connection.", Toast.LENGTH_SHORT).show();
                     versionTextView.setText("Version 3.0.45 | check later for updates");
-                } else if (result.equals("1504")) {
+                }  else if (result.equals("1504")) {
                     Toast.makeText(Update.this, "Couldn't check for updates", Toast.LENGTH_SHORT).show();
-                    versionTextView.setText("Version 3.0.45 | stable");
-                } else {
                     versionTextView.setText("Version 3.0.45 | check later for updates");
                 }
-            } else {
-                Toast.makeText(Update.this, "Couldn't check for updates", Toast.LENGTH_SHORT).show();
-                versionTextView.setText("Version 3.0.45 | check later for updates");
+                    else {
+                    if (clicks == 0){
+                        clicks++;
+                        Toast.makeText(Update.this, "Your router is Up to date !", Toast.LENGTH_SHORT).show();
+                        versionTextView.setText("Version 3.0.45 | stable");
+                    }
+                    else if (clicks == 1){
+                        update_click();
+                    }
+                    else {
+                        update_click_more();
+                    }
+                }
             }
 
             routerInfoSection.setVisibility(View.VISIBLE);

@@ -161,6 +161,7 @@
                 android:contentDescription="QOS"/>
 
             <TextView
+                android:id="@+id/qosText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -235,6 +236,7 @@
                 android:contentDescription="Notification"/>
 
             <TextView
+                android:id="@+id/notificationText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Online Notification"

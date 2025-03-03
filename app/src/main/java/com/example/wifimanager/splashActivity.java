@@ -37,6 +37,6 @@ public class splashActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }, 3000); // 3 seconds splash screen duration
+        }, 5000); // 3 seconds splash screen duration
     }
 }

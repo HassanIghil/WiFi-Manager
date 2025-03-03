@@ -221,7 +221,7 @@ public class Firewall extends AppCompatActivity {
     private void updateBlockedAndProtectedCount(int blockedCount, int protectedTime) {
         // Update "Blocked" and "Protected" text
         textView106.setText("" + blockedCount);
-        textView0hr40m.setText("" + formatTime(protectedTime));
+        textView0hr40m.setText(formatTime(protectedTime));
     }
 
     private void updateUIForFirewallOn(int blockedCount, int protectedTime) {
@@ -238,7 +238,7 @@ public class Firewall extends AppCompatActivity {
 
         // Update "Blocked" and "Protected" text
         textView106.setText("" + blockedCount);
-        textView0hr40m.setText("" + formatTime(protectedTime));
+        textView0hr40m.setText(formatTime(protectedTime));
 
         // Hide shield and small text
         innerImageView.setVisibility(View.GONE);

@@ -13,8 +13,10 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.wifimanager.R;
 import com.google.gson.Gson;
@@ -44,6 +46,9 @@ public class DeviceDetailsActivity extends AppCompatActivity {
     private LinearLayout bottomContent;
     private ImageView accessIcon;
     private TextView accessText;
+    private TextView notificationText; // TextView for notification
+    private TextView qosText; // TextView for QoS
+    private TextView internetAccessText; // TextView for internet access
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +95,9 @@ public class DeviceDetailsActivity extends AppCompatActivity {
         bottomContent = findViewById(R.id.bottomContent);
         accessIcon = findViewById(R.id.access_icon);
         accessText = findViewById(R.id.accessText);
+        notificationText = findViewById(R.id.notificationText); // Initialize notification text
+        qosText = findViewById(R.id.qosText); // Initialize QoS text
+        internetAccessText = findViewById(R.id.accessText); // Initialize internet access text
 
         // Get data from intent
         String deviceIp = getIntent().getStringExtra("DEVICE_IP");
@@ -128,68 +136,50 @@ public class DeviceDetailsActivity extends AppCompatActivity {
 
         // Set up notification image click listener
         notificationImageView.setOnClickListener(v -> {
-            if (notificationImageView.getDrawable().getConstantState().equals(getResources().getDrawable(R.drawable.notification).getConstantState())) {
-                notificationImageView.setImageResource(R.drawable.notificatio_active);
-                sharedPreferences.edit().putBoolean("notification_image_active_" + deviceMac, true).apply();
-            } else {
-                notificationImageView.setImageResource(R.drawable.notification);
-                sharedPreferences.edit().putBoolean("notification_image_active_" + deviceMac, false).apply();
-            }
+            // Hide images and texts
+            hideViews();
+            // Show the animation
+            lottieAnimationView.setVisibility(View.VISIBLE);
+            lottieAnimationView.playAnimation();
+
+            // Toggle notification state
+            toggleNotificationState();
         });
 
         // Set up qos image click listener
         qosImage.setOnClickListener(v -> {
-            if (qosImage.getDrawable().getConstantState().equals(getResources().getDrawable(R.drawable.qos).getConstantState())) {
-                qosImage.setImageResource(R.drawable.qos_active);
-                sharedPreferences.edit().putBoolean("qos_image_active_" + deviceMac, true).apply();
-            } else {
-                qosImage.setImageResource(R.drawable.qos);
-                sharedPreferences.edit().putBoolean("qos_image_active_" + deviceMac, false).apply();
-            }
+            // Hide images and texts
+            hideViews();
+            // Show the animation
+            lottieAnimationView.setVisibility(View.VISIBLE);
+            lottieAnimationView.playAnimation();
+
+            // Toggle QoS state
+            toggleQoSState();
         });
 
         // Set up block/unblock click listener
         blockuser.setOnClickListener(v -> {
-            // Check the current block status from the UI
-            boolean isBlocked = blockText.getText().toString().equalsIgnoreCase("Unblock");
-            int option = isBlocked ? 1 : 0; // 0 for block, 1 for unblock
-            String apiUrl = "http://192.168.31.1/cgi-bin/luci/;stok=" + stok +
-                    "/api/xqnetwork/edit_device?mac=" + deviceMac.replace(":", "%3A") +
-                    "&model=0&option=" + option;
+            // Hide images and texts
+            hideViews();
+            // Show the animation
+            lottieAnimationView.setVisibility(View.VISIBLE);
+            lottieAnimationView.playAnimation();
 
-            new Thread(() -> {
-                try {
-                    HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.setConnectTimeout(5000);
-                    connection.setReadTimeout(5000);
+            // Toggle block status
+            toggleBlockStatus();
+        });
 
-                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                        StringBuilder response = new StringBuilder();
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            response.append(line);
-                        }
-                        reader.close();
+        // Set up access icon click listener
+        accessIcon.setOnClickListener(v -> {
+            // Hide images and texts
+            hideViews();
+            // Show the animation
+            lottieAnimationView.setVisibility(View.VISIBLE);
+            lottieAnimationView.playAnimation();
 
-                        if (response.toString().contains("\"code\":0")) {
-                            runOnUiThread(() -> {
-                                // Toggle the block status in the UI
-                                if (isBlocked) {
-                                    blockuser.setImageResource(R.drawable.block);
-                                    blockText.setText("Block");
-                                } else {
-                                    blockuser.setImageResource(R.drawable.unblock);
-                                    blockText.setText("Unblock");
-                                }
-                            });
-                        }
-                    }
-                } catch (Exception e) {
-                    Log.e("DeviceDetails", "Error toggling block status: " + e.getMessage(), e);
-                }
-            }).start();
+            // Toggle internet access
+            toggleInternetAccess();
         });
 
         // Show loading animation and hide bottom content initially
@@ -204,34 +194,154 @@ public class DeviceDetailsActivity extends AppCompatActivity {
             lottieAnimationView.setVisibility(View.GONE);
             bottomContent.setVisibility(View.VISIBLE);
         }, 3000); // Adjust the delay as needed
+    }
 
-        // Set up access icon click listener
-        accessIcon.setOnClickListener(v -> {
-            // Check the current internet access status
-            boolean isInternetBlocked = accessText.getText().toString().equalsIgnoreCase("Enable Access");
+    private void hideViews() {
+        notificationImageView.setVisibility(View.GONE);
+        qosImage.setVisibility(View.GONE);
+        blockuser.setVisibility(View.GONE);
+        accessIcon.setVisibility(View.GONE);
 
-            // Toggle the state
-            toggleInternetAccess(deviceMac, isInternetBlocked, new InternetAccessCallback() {
-                @Override
-                public void onSuccess() {
-                    runOnUiThread(() -> {
-                        // Update the UI
-                        if (isInternetBlocked) {
-                            accessIcon.setImageResource(R.drawable.web_block);
-                            accessText.setText("Disable Access");
-                        } else {
-                            accessIcon.setImageResource(R.drawable.web_unblock);
-                            accessText.setText("Enable Access");
-                        }
-                    });
+        notificationText.setVisibility(View.GONE); // Hide notification text
+        qosText.setVisibility(View.GONE); // Hide QoS text
+        blockText.setVisibility(View.GONE); // Hide block text
+        accessText.setVisibility(View.GONE); // Hide access text
+    }
+
+    private void showViews() {
+        notificationImageView.setVisibility(View.VISIBLE);
+        qosImage.setVisibility(View.VISIBLE);
+        blockuser.setVisibility(View.VISIBLE);
+        accessIcon.setVisibility(View.VISIBLE);
+
+        notificationText.setVisibility(View.VISIBLE); // Show notification text
+        qosText.setVisibility(View.VISIBLE); // Show QoS text
+        blockText.setVisibility(View.VISIBLE); // Show block text
+        accessText.setVisibility(View.VISIBLE); // Show access text
+    }
+
+    private void toggleNotificationState() {
+        if (notificationImageView.getDrawable().getConstantState().equals(getResources().getDrawable(R.drawable.notification).getConstantState())) {
+            notificationImageView.setImageResource(R.drawable.notificatio_active);
+            sharedPreferences.edit().putBoolean("notification_image_active_" + deviceMac, true).apply();
+        } else {
+            notificationImageView.setImageResource(R.drawable.notification);
+            sharedPreferences.edit().putBoolean("notification_image_active_" + deviceMac, false).apply();
+        }
+
+        // Hide the animation and show views after it finishes
+        new Handler().postDelayed(() -> {
+            lottieAnimationView.setVisibility(View.GONE);
+            showViews();
+        }, 2000); // Adjust the delay based on animation duration
+    }
+
+    private void toggleQoSState() {
+        if (qosImage.getDrawable().getConstantState().equals(getResources().getDrawable(R.drawable.qos).getConstantState())) {
+            qosImage.setImageResource(R.drawable.qos_active);
+            sharedPreferences.edit().putBoolean("qos_image_active_" + deviceMac, true).apply();
+        } else {
+            qosImage.setImageResource(R.drawable.qos);
+            sharedPreferences.edit().putBoolean("qos_image_active_" + deviceMac, false).apply();
+        }
+
+        // Hide the animation and show views after it finishes
+        new Handler().postDelayed(() -> {
+            lottieAnimationView.setVisibility(View.GONE);
+            showViews();
+        }, 2000); // Adjust the delay based on animation duration
+    }
+
+    private void toggleBlockStatus() {
+        boolean isBlocked = blockText.getText().toString().equalsIgnoreCase("Unblock");
+        int option = isBlocked ? 1 : 0; // 0 for block, 1 for unblock
+        String apiUrl = "http://192.168.31.1/cgi-bin/luci/;stok=" + stok +
+                "/api/xqnetwork/edit_device?mac=" + deviceMac.replace(":", "%3A") +
+                "&model=0&option=" + option;
+
+        new Thread(() -> {
+            try {
+                HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
+                connection.setRequestMethod("GET");
+                connection.setConnectTimeout(5000);
+                connection.setReadTimeout(5000);
+
+                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    reader.close();
+
+                    if (response.toString().contains("\"code\":0")) {
+                        runOnUiThread(() -> {
+                            // Toggle the block status in the UI
+                            if (isBlocked) {
+                                blockuser.setImageResource(R.drawable.block);
+                                blockText.setText("Block");
+                            } else {
+                                blockuser.setImageResource(R.drawable.unblock);
+                                blockText.setText("Unblock");
+                            }
+
+                            // Hide the animation and show views after it finishes
+                            lottieAnimationView.setVisibility(View.GONE);
+                            showViews();
+                        });
+                    }
                 }
+            } catch (Exception e) {
+                Log.e("DeviceDetails", "Error toggling block status: " + e.getMessage(), e);
+                runOnUiThread(() -> {
+                    // Hide the animation and show views in case of an error
+                    lottieAnimationView.setVisibility(View.GONE);
+                    showViews();
+                });
+            }
+        }).start();
+    }
 
-                @Override
-                public void onFailure(String error) {
-                    Log.e("DeviceDetails", "Error toggling internet access: " + error);
-                }
-            });
+    private void toggleInternetAccess() {
+        boolean isInternetBlocked = accessText.getText().toString().equalsIgnoreCase("Enable Access");
+
+        toggleInternetAccess(deviceMac, isInternetBlocked, new InternetAccessCallback() {
+            @Override
+            public void onSuccess() {
+                runOnUiThread(() -> {
+                    // Update the UI
+                    if (isInternetBlocked) {
+                        accessIcon.setImageResource(R.drawable.web_block);
+                        accessText.setText("Disable Access");
+                    } else {
+                        accessIcon.setImageResource(R.drawable.web_unblock);
+                        accessText.setText("Enable Access");
+                    }
+
+                    // Hide the animation and show views after it finishes
+                    lottieAnimationView.setVisibility(View.GONE);
+                    showViews();
+                });
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("DeviceDetails", "Error toggling internet access: " + error);
+
+                runOnUiThread(() -> {
+                    // Hide the animation and show views in case of an error
+                    lottieAnimationView.setVisibility(View.GONE);
+                    showViews();
+                });
+            }
         });
+    }
+
+    private interface InternetAccessCallback {
+        void onSuccess();
+
+        void onFailure(String error);
     }
 
     private void toggleInternetAccess(String mac, boolean isBlocked, InternetAccessCallback callback) {
@@ -269,12 +379,6 @@ public class DeviceDetailsActivity extends AppCompatActivity {
                 callback.onFailure(e.getMessage());
             }
         }).start();
-    }
-
-    private interface InternetAccessCallback {
-        void onSuccess();
-
-        void onFailure(String error);
     }
 
     private void checkBlockStatus() {

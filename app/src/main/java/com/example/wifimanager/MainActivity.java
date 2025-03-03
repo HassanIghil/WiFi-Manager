@@ -43,13 +43,23 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "STOK is null", Toast.LENGTH_LONG).show();
         }
 
+        // Initialize firewall state, blocked, and protected values in SharedPreferences if not already set
+        SharedPreferences firewallPrefs = getSharedPreferences("firewall_prefs", MODE_PRIVATE);
+        if (!firewallPrefs.contains("firewall_enabled")) {
+            SharedPreferences.Editor editor = firewallPrefs.edit();
+            editor.putBoolean("firewall_enabled", true); // Default to "On"
+            editor.putInt("blocked_count", 0); // Initialize blocked count
+            editor.putInt("protected_time", 0); // Initialize protected time
+            editor.apply();
+        }
+
         // Bottom Navigation Setup
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    // Pass both STOK and router name to HomeFragment
+                    // Pass both STOK, router name, and firewall state to HomeFragment
                     selectedFragment = HomeFragment.newInstance(STOK, routerName);
                     break;
                 case R.id.navigation_settings:

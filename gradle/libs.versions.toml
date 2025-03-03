@@ -1,5 +1,6 @@
 [versions]
 agp = "8.8.0"
+blurview = "version-2.0.3"
 hutool = "huttol-all"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -16,6 +17,7 @@ navigationFragment = "2.8.5"
 securityCrypto = "1.0.0"
 
 [libraries]
+blurview = { module = "com.github.Dimezis:BlurView", version.ref = "blurview" }
 hutool = { module = "cn:hutool", version.ref = "hutool" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

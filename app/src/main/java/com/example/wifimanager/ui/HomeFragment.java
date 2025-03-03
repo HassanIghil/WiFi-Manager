@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +44,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -133,7 +131,7 @@ public class HomeFragment extends Fragment {
         isFragmentActive.set(true);
 
         // Initialize SharedPreferences
-        sharedPreferences = requireActivity().getSharedPreferences("fire_stat", Context.MODE_PRIVATE);
+        sharedPreferences = requireActivity().getSharedPreferences("firewall_prefs", Context.MODE_PRIVATE);
 
         // Initialize components
         setupViews(view);
@@ -144,20 +142,23 @@ public class HomeFragment extends Fragment {
         statusTextView = view.findViewById(R.id.status);
         statusTextView.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), Firewall.class);
-            startActivityForResult(intent, 1);
+            intent.putExtra("STOK", STOK); // Pass the STOK token
+            startActivityForResult(intent, 1); // Launch Firewall activity for result
         });
 
         arrow = view.findViewById(R.id.imageView4);
         arrow.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), Firewall.class);
-            startActivityForResult(intent, 1);
+            intent.putExtra("STOK", STOK); // Pass the STOK token
+            startActivityForResult(intent, 1); // Launch Firewall activity for result
         });
 
-        // Check firewall state
+        // Check firewall state at launch
         checkFirewallState();
 
         startPeriodicUpdates();
-// Retrieve STOK from arguments
+
+        // Retrieve STOK from arguments
         if (getArguments() != null) {
             STOK = getArguments().getString("STOK");
         }
@@ -165,19 +166,35 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Refresh the firewall state when the fragment resumes
+        checkFirewallState();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            // Refresh firewall state when returning from Firewall activity
+            checkFirewallState();
+        }
+    }
+
     private void setupViews(View view) {
-// Add router name initialization
+        // Add router name initialization
         TextView routerNameTextView = view.findViewById(R.id.routername);
         uploadSpeedTextView = view.findViewById(R.id.upload);
         downloadSpeedTextView = view.findViewById(R.id.textView4);
 
-// Retrieve router name from arguments
+        // Retrieve router name from arguments
         if (getArguments() != null) {
             String routerName = getArguments().getString("ROUTER_NAME", "My Router");
             routerNameTextView.setText(routerName);
         }
 
-// Existing arrow setup code...
+        // Existing arrow setup code...
         ImageView upArrow = view.findViewById(R.id.imageView2);
         ImageView downArrow = view.findViewById(R.id.imageView3);
         Glide.with(this)
@@ -194,12 +211,12 @@ public class HomeFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-// Ensure STOK is retrieved from arguments first
+        // Ensure STOK is retrieved from arguments first
         if (getArguments() != null) {
             STOK = getArguments().getString("STOK");
         }
 
-// Pass the context (this fragment's context) as the fourth argument
+        // Pass the context (this fragment's context) as the fourth argument
         adapter = new DeviceAdapter(new ArrayList<>(), device -> {
             Intent intent = new Intent(getActivity(), DeviceDetailsActivity.class);
             intent.putExtra("DEVICE_NAME", device.getName());
@@ -209,7 +226,7 @@ public class HomeFragment extends Fragment {
             startActivity(intent);
         }, STOK, requireContext());
 
-// Add requireContext() as the fourth argument
+        // Add requireContext() as the fourth argument
         recyclerView.setAdapter(adapter);
     }
 
@@ -236,7 +253,7 @@ public class HomeFragment extends Fragment {
         super.onDestroyView();
         isFragmentActive.set(false);
 
-// Cleanup resources
+        // Cleanup resources
         if (handler != null) {
             handler.removeCallbacksAndMessages(null);
         }
@@ -247,7 +264,7 @@ public class HomeFragment extends Fragment {
             deviceListRunnable.clean();
         }
 
-// Clear Glide resources
+        // Clear Glide resources
         ImageView upArrow = getView().findViewById(R.id.imageView2);
         ImageView downArrow = getView().findViewById(R.id.imageView3);
         Glide.with(this).clear(upArrow);
@@ -387,8 +404,8 @@ public class HomeFragment extends Fragment {
 
     private void checkFirewallState() {
         if (sharedPreferences != null) {
-            boolean firewallEnabled = sharedPreferences.getBoolean("firewall_enabled", true);
-            if (firewallEnabled) {
+            int firewallState = sharedPreferences.getInt("firewall_state", 1); // Default to 1 (enabled)
+            if (firewallState == 1) {
                 // Firewall is on, display corresponding text
                 SpannableStringBuilder sb = new SpannableStringBuilder("Status : Safe");
                 sb.setSpan(new ForegroundColorSpan(Color.WHITE), 0, 7, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
@@ -401,21 +418,6 @@ public class HomeFragment extends Fragment {
                 sb.setSpan(new ForegroundColorSpan(Color.RED), 9, sb.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                 statusTextView.setText(sb);
             }
-        }
-
-        // Add OnClickListener to statusTextView
-        statusTextView.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), Firewall.class);
-            startActivityForResult(intent, 1);
-        });
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
-            // Refresh firewall state
-            checkFirewallState();
         }
     }
 }

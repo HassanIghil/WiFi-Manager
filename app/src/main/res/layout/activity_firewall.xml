@@ -56,8 +56,8 @@
             <!-- Lottie Animation View -->
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/lottieAnimationView"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_width="450dp"
+                android:layout_height="330dp"
                 android:layout_marginBottom="25dp"
                 android:layout_gravity="center"
                 app:lottie_autoPlay="true"
@@ -191,8 +191,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="High"
-                android:textSize="14sp"
                 android:layout_marginRight="25dp"
+                android:textSize="14sp"
                 android:textColor="#808080"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"/>

@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:background="@color/white"
     android:gravity="top"
-    android:id="@+id/main"> <!-- Add this line -->
+    android:id="@+id/main">
 
     <!-- Toolbar with Back Arrow -->
     <androidx.appcompat.widget.Toolbar
@@ -28,6 +28,145 @@
             android:textSize="20sp" />
     </androidx.appcompat.widget.Toolbar>
 
-    <!-- Add your smart life activity content here -->
+    <!-- System Tools Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#f5f5f5"
+        android:padding="16dp">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="System Tools"
+            android:textSize="16sp"
+            android:textColor="#757575"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@android:color/white">
+
+            <!-- Guest Wi-Fi -->
+            <LinearLayout
+                android:id="@+id/guest_wifi_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/guest"
+                    android:padding="12dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Guest Wi-Fi"
+                    android:textSize="14sp"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+            <!-- Vertical Divider 1 -->
+            <View
+                android:layout_width="0.1dp"
+                android:layout_height="match_parent"
+                android:background="#E0E0E0"/>
+
+            <!-- QoS -->
+            <LinearLayout
+                android:id="@+id/qos_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/speed_qos"
+                    android:padding="12dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="QoS"
+                    android:textSize="14sp"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+            <!-- Vertical Divider 2 -->
+            <View
+                android:layout_width="0.2dp"
+                android:layout_height="match_parent"
+                android:background="#E0E0E0"/>
+            <View
+                android:layout_width="0.1dp"
+                android:layout_height="match_parent"
+                android:background="#E0E0E0"/>
+
+            <!-- Health mode -->
+            <LinearLayout
+                android:id="@+id/health_mode_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/health"
+                    android:padding="12dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Health mode"
+                    android:textSize="14sp"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+            <!-- Vertical Divider 3 -->
+            <View
+                android:layout_width="0.1dp"
+                android:layout_height="match_parent"
+                android:background="#E0E0E0"/>
+
+            <!-- Schedule reboot -->
+            <LinearLayout
+                android:id="@+id/schedule_reboot_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/reboot"
+                    android:padding="12dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Schedule reboot"
+                    android:textSize="14sp"
+                    android:gravity="center"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

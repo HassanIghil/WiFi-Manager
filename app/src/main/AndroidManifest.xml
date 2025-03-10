@@ -20,6 +20,30 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".smart_life_options.ScheduleRebootActivity"
+            android:exported="false" />
+        <activity
+            android:name=".smart_life_options.HealthModeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HealthModeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".smart_life_options.GuestWifiActivity"
+            android:exported="false" />
+        <activity
+            android:name=".smart_life_options.QOS"
+            android:exported="false" />
+        <activity
+            android:name=".Settings_Components.TimeZoneSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Settings_Components.FactoryResetActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Settings_Components.pass_reset"
+            android:exported="false" />
+        <activity
             android:name=".Settings_Components.about_router_settings"
             android:exported="false" />
         <activity

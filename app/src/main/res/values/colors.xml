@@ -16,5 +16,8 @@
     <color name="orange">#FFA500</color> <!-- Define green color -->
     <color name="red">#FF0000</color>
     <color name="light_gray">#E4E4E4</color>
-
+    <color name="background_color">#F5F5F7</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="text_primary">#212121</color>
+    <color name="accent_color">#1A73E8</color>
 </resources>

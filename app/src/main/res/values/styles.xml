@@ -21,7 +21,7 @@
     </style>
 
     <!-- Login theme -->
-    <style name="AppTheme.Login" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme.Login" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>

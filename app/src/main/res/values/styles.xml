@@ -12,6 +12,7 @@
         <item name="elevation">0dp</item>
     </style>
 
+
     <!-- Launcher theme -->
     <style name="AppTheme.Launcher" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_screen</item>

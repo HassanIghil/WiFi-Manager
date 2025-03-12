@@ -12,12 +12,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.wifimanager.R;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -33,10 +31,11 @@ public class Firewall extends AppCompatActivity {
     private LottieAnimationView lottieAnimationView;
     private ImageView innerImageView;
     private TextView smallTextView;
-    private Button turnOffButton;
+    private MaterialButton turnOffButton;
     private TextView gifTextView1, gifTextView3, textView106, textView0hr40m;
-    private ConstraintLayout animationContainer;
+    private View statusCard; // Changed from MaterialCardView to View to match FrameLayout in XML
     private Toolbar toolbar;
+    private ImageView menuButton; // Added to match XML
 
     private int originalBackgroundColor;
     private int originalToolbarColor;
@@ -45,6 +44,8 @@ public class Firewall extends AppCompatActivity {
     private OkHttpClient httpClient;
     private SharedPreferences sharedPreferences;
 
+    private static final String PREF_TOTAL_TIME = "total_accumulated_time";
+    private static final String PREF_SESSION_START = "session_start_time";
     private Handler handler;
     private Runnable refreshRunnable;
     private static final int REFRESH_INTERVAL = 60000; // Refresh every 1 min
@@ -79,7 +80,14 @@ public class Firewall extends AppCompatActivity {
         }
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-        // Initialize views
+        // Initialize menu button from updated layout
+        menuButton = findViewById(R.id.menuButton);
+        menuButton.setOnClickListener(v -> {
+            // Handle menu button click
+            // This can be implemented later with specific menu functionality
+        });
+
+        // Initialize views from the updated layout
         lottieAnimationView = findViewById(R.id.lottieAnimationView);
         innerImageView = findViewById(R.id.innerImageView);
         smallTextView = findViewById(R.id.smallTextView);
@@ -88,7 +96,7 @@ public class Firewall extends AppCompatActivity {
         gifTextView3 = findViewById(R.id.gifTextView3);
         textView106 = findViewById(R.id.textView106);
         textView0hr40m = findViewById(R.id.textView0hr40m);
-        animationContainer = findViewById(R.id.animationContainer);
+        statusCard = findViewById(R.id.statusCard); // Now a FrameLayout instead of MaterialCardView
 
         // Store original background, toolbar, and status bar colors
         originalBackgroundColor = getResources().getColor(R.color.topColor);
@@ -106,13 +114,14 @@ public class Firewall extends AppCompatActivity {
         // Toggle button click listener
         turnOffButton.setOnClickListener(v -> {
             if (turnOffButton.getText().toString().equals("Turn Off")) {
-                // Show confirmation dialog only if the button text is "Turn Off"
-                showConfirmationDialog();
+                showConfirmationDialog(); // Show the custom confirmation dialog
             } else {
-                // If the button text is "Turn On", directly toggle the firewall state
-                toggleFirewallState();
+                toggleFirewallState(); // Directly toggle the firewall state
             }
         });
+
+        // Set up click listeners for the settings cards
+        setupSettingsCardListeners();
 
         // Step 1: Load last stored data from SharedPreferences
         loadLastStoredData();
@@ -135,6 +144,35 @@ public class Firewall extends AppCompatActivity {
         handler.post(refreshRunnable);
     }
 
+    private void setupSettingsCardListeners() {
+        // Find all the card views in the settings section
+        MaterialCardView securityCard = findViewById(R.id.securityCard);
+        MaterialCardView blocklistCard = findViewById(R.id.blocklistCard);
+        MaterialCardView passwordCard = findViewById(R.id.passwordCard);
+        MaterialCardView networkCard = findViewById(R.id.networkCard);
+
+        // Set click listeners for each card
+        securityCard.setOnClickListener(v -> {
+            // Handle security card click
+            // This can be implemented later with the specific navigation logic
+        });
+
+        blocklistCard.setOnClickListener(v -> {
+            // Handle blocklist card click
+            // This can be implemented later with the specific navigation logic
+        });
+
+        passwordCard.setOnClickListener(v -> {
+            // Handle password strength card click
+            // This can be implemented later with the specific navigation logic
+        });
+
+        networkCard.setOnClickListener(v -> {
+            // Handle network security card click
+            // This can be implemented later with the specific navigation logic
+        });
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -143,22 +181,19 @@ public class Firewall extends AppCompatActivity {
     }
 
     private void loadLastStoredData() {
-        // Retrieve last stored data from SharedPreferences
-        int lastFirewallState = sharedPreferences.getInt("firewall_state", 1); // Default to enabled
-        int lastBlockedCount = sharedPreferences.getInt("blocked_count", 0); // Default to 0
-        int lastProtectedTime = sharedPreferences.getInt("protected_time", 0); // Default to 0
+        int lastFirewallState = sharedPreferences.getInt("firewall_state", 1);
+        int lastBlockedCount = sharedPreferences.getInt("blocked_count", 0);
+        long totalAccumulated = sharedPreferences.getLong(PREF_TOTAL_TIME, 0);
 
-        // Update UI with last stored data
         if (lastFirewallState == 1) {
-            updateUIForFirewallOn(lastBlockedCount, lastProtectedTime);
+            updateUIForFirewallOn(lastBlockedCount, (int) totalAccumulated);
         } else {
-            updateUIForFirewallOff(lastBlockedCount, lastProtectedTime);
+            updateUIForFirewallOff(lastBlockedCount, (int) totalAccumulated);
         }
 
-        // Save the current status values
         currentFirewallState = lastFirewallState;
         currentBlockedCount = lastBlockedCount;
-        currentProtectedTime = lastProtectedTime;
+        currentProtectedTime = (int) totalAccumulated;
     }
 
     private void fetchFirewallStatus() {
@@ -183,43 +218,57 @@ public class Firewall extends AppCompatActivity {
                         JSONObject jsonResponse = new JSONObject(responseBody);
                         int enable = jsonResponse.getInt("enable");
 
-                        // Extract "Blocked" and "Protected" values from the API response
                         JSONObject statistics = jsonResponse.getJSONArray("list").getJSONObject(0).getJSONObject("statistics");
-                        int blockedCount = statistics.getInt("download"); // Example: "Blocked 106"
-                        int protectedTime = statistics.getInt("online");  // Example: "Protected 0hr 40m"
-
-                        // Save the updated firewall state, blocked count, and protected time in SharedPreferences
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putInt("firewall_state", enable);
-                        editor.putInt("blocked_count", blockedCount);
-                        editor.putInt("protected_time", protectedTime);
-                        editor.apply();
+                        int blockedCount = statistics.getInt("download");
 
                         runOnUiThread(() -> {
-                            // If the state has changed, update the animation and UI
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            long currentTime = System.currentTimeMillis();
+                            long totalAccumulated = sharedPreferences.getLong(PREF_TOTAL_TIME, 0);
+                            long sessionStart = sharedPreferences.getLong(PREF_SESSION_START, -1);
+
+                            editor.putInt("firewall_state", enable);
+                            editor.putInt("blocked_count", blockedCount);
+
                             if (enable == 1) {
-                                // Firewall is On
-                                updateUIForFirewallOn(blockedCount, protectedTime);
+                                if (sessionStart == -1) {
+                                    sessionStart = currentTime;
+                                    editor.putLong(PREF_SESSION_START, sessionStart);
+                                } else {
+                                    long elapsedTime = currentTime - sessionStart;
+                                    totalAccumulated += elapsedTime / 1000;
+                                    sessionStart = currentTime;
+                                    editor.putLong(PREF_TOTAL_TIME, totalAccumulated);
+                                    editor.putLong(PREF_SESSION_START, sessionStart);
+                                }
                             } else {
-                                // Firewall is Off
-                                updateUIForFirewallOff(blockedCount, protectedTime);
+                                if (sessionStart != -1) {
+                                    long elapsedTime = currentTime - sessionStart;
+                                    totalAccumulated += elapsedTime / 1000;
+                                    editor.putLong(PREF_TOTAL_TIME, totalAccumulated);
+                                    editor.remove(PREF_SESSION_START);
+                                }
                             }
 
-                            // Update the Blocked and Protected count even if the animation does not change
-                            updateBlockedAndProtectedCount(blockedCount, protectedTime);
+                            editor.apply();
+
+                            if (enable == 1) {
+                                updateUIForFirewallOn(blockedCount, (int) totalAccumulated);
+                            } else {
+                                updateUIForFirewallOff(blockedCount, (int) totalAccumulated);
+                            }
+
+                            updateBlockedAndProtectedCount(blockedCount, (int) totalAccumulated);
                         });
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                } else {
-                    // Handle the error
                 }
             }
         });
     }
 
     private void updateBlockedAndProtectedCount(int blockedCount, int protectedTime) {
-        // Update "Blocked" and "Protected" text
         textView106.setText("" + blockedCount);
         textView0hr40m.setText(formatTime(protectedTime));
     }
@@ -245,7 +294,7 @@ public class Firewall extends AppCompatActivity {
         smallTextView.setVisibility(View.GONE);
 
         // Revert colors to original
-        animationContainer.setBackgroundColor(originalBackgroundColor);
+        statusCard.setBackgroundColor(originalBackgroundColor); // Changed from setCardBackgroundColor to setBackgroundColor
         toolbar.setBackgroundColor(originalToolbarColor);
         getWindow().setStatusBarColor(originalStatusBarColor);
     }
@@ -268,41 +317,46 @@ public class Firewall extends AppCompatActivity {
         smallTextView.setText("Firewall is off");
         smallTextView.setVisibility(View.VISIBLE);
 
-        // Change background, toolbar, and status bar color to orange
-        int orangeColor = getResources().getColor(R.color.red);
-        animationContainer.setBackgroundColor(orangeColor);
-        toolbar.setBackgroundColor(orangeColor);
-        getWindow().setStatusBarColor(orangeColor);
+        // Change background, toolbar, and status bar color to red
+        int redColor = getResources().getColor(R.color.red);
+        statusCard.setBackgroundColor(redColor); // Changed from setCardBackgroundColor to setBackgroundColor
+        toolbar.setBackgroundColor(redColor);
+        getWindow().setStatusBarColor(redColor);
     }
 
-    private String formatTime(int seconds) {
-        // Convert seconds to "0hr 40m" format
-        int hours = seconds / 3600;
-        int minutes = (seconds % 3600) / 60;
+    private String formatTime(int totalSeconds) {
+        int hours = totalSeconds / 3600;
+        int minutes = (totalSeconds % 3600) / 60;
         return hours + "hr " + minutes + "m";
     }
 
     private void showConfirmationDialog() {
+        // Inflate the custom dialog layout
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_confirm, null);
+
+        // Initialize dialog components
+        TextView dialogTitle = dialogView.findViewById(R.id.dialogTitle);
+        TextView dialogMessage = dialogView.findViewById(R.id.dialogMessage);
+        Button dialogCancelButton = dialogView.findViewById(R.id.dialogCancelButton);
+        Button dialogConfirmButton = dialogView.findViewById(R.id.dialogConfirmButton);
+
+        // Create the dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Confirm");
-        builder.setMessage("Are you sure you want to turn off the firewall?");
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // User confirmed, proceed to turn off the firewall
-                toggleFirewallState();
-            }
-        });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // User canceled, do nothing
-                dialog.dismiss();
-            }
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent); // Transparent background
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation; // Apply animation
+        dialog.show();
+
+        // Set click listeners for the buttons
+        dialogCancelButton.setOnClickListener(v -> {
+            dialog.dismiss(); // Close the dialog
         });
 
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        dialogConfirmButton.setOnClickListener(v -> {
+            dialog.dismiss(); // Close the dialog
+            toggleFirewallState(); // Proceed with the action
+        });
     }
 
     private void toggleFirewallState() {

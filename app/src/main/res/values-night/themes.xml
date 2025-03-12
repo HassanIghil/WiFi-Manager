@@ -1,7 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.WiFiManager" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    <!-- Prevent dark mode from changing colors -->
+    <style name="Base.Theme.WiFiManager" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/topColor</item>
+        <item name="android:forceDarkAllowed" tools:ignore="NewApi">false</item>
     </style>
+
+    <style name="Theme.WiFiManager" parent="Base.Theme.WiFiManager" />
 </resources>

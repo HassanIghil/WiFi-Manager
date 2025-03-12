@@ -87,9 +87,11 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="24dp"
         android:text="Reboot now"
+        android:clickable="true"
         android:textColor="#FF4444"
         android:textAllCaps="false"
         android:background="@drawable/rounded_button_outline"
+        android:foreground="?attr/selectableItemBackground"
         android:paddingTop="12dp"
         android:paddingBottom="12dp" />
 

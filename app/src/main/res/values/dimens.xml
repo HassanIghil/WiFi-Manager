@@ -20,4 +20,5 @@
     <dimen name="update_button_height">60dp</dimen>
     <dimen name="update_button_margin">10dp</dimen>
     <dimen name="update_button_text_size">16sp</dimen>
+    <dimen name="check_icon_size">20dp</dimen>
 </resources>

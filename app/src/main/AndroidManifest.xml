@@ -25,9 +25,7 @@
         <activity
             android:name=".smart_life_options.HealthModeActivity"
             android:exported="false" />
-        <activity
-            android:name=".HealthModeActivity"
-            android:exported="false" />
+
         <activity
             android:name=".smart_life_options.GuestWifiActivity"
             android:exported="false" />

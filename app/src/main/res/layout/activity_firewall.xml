@@ -1,356 +1,410 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/white"
-    android:gravity="top"
+    android:background="@color/topColor"
     android:id="@+id/main">
 
-
-
-    <!-- Toolbar with Back Arrow -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <!-- App Bar with Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/topColor"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:navigationIcon="@drawable/left"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:paddingTop="10dp"
-        android:elevation="4dp">
+        app:elevation="0dp">
 
-        <!-- Title Text -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Firewall"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
-
-        <!-- Dots Menu Icon (Aligned to the Right) -->
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="end"
-            android:src="@drawable/dots_menu"
-            android:layout_marginEnd="8dp" />
-    </androidx.appcompat.widget.Toolbar>
-
-    <!-- Animation Container -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/animationContainer"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:background="@color/topColor"
-        tools:context=".MainActivity">
-
-        <FrameLayout
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center">
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/topColor"
+            app:navigationIcon="@drawable/left"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            android:elevation="0dp">
 
-            <!-- Lottie Animation View -->
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/lottieAnimationView"
-                android:layout_width="450dp"
-                android:layout_height="330dp"
-                android:layout_marginBottom="25dp"
-                android:layout_gravity="center"
-                app:lottie_autoPlay="true"
-                app:lottie_loop="true" />
-
-            <!-- Shield Image -->
-            <ImageView
-                android:id="@+id/innerImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="25dp"
-                android:visibility="gone"
-                android:src="@drawable/shield" />
-
-            <!-- Small Text -->
             <TextView
-                android:id="@+id/smallTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:visibility="gone"
-                android:text="Firewall is off"
-                android:paddingTop="90dp"
-                android:textSize="14sp"
-                android:textColor="@android:color/white" />
+                android:text="Firewall"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-            <!-- Other views -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="vertical"
-                android:layout_marginBottom="25dp"
-                android:gravity="center">
+            <ImageView
+                android:id="@+id/menuButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end"
+                android:src="@drawable/dots_menu"
+                android:layout_marginEnd="16dp"
+                android:clickable="true"
+                android:focusable="true" />
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
 
-                <TextView
-                    android:id="@+id/gifTextView1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Blocked"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="14sp"
-                    android:gravity="center" />
-                <TextView
-                    android:id="@+id/textView106"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="106"
-                    android:textStyle="bold"
-                    android:textSize="25dp"
-                    android:textColor="@color/white" />
-                <TextView
-                    android:id="@+id/gifTextView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Protected"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="14sp"
-                    android:gravity="center" />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:padding="0dp"
+        android:clipToPadding="true"
+        android:fillViewport="true">
 
-                <TextView
-                    android:id="@+id/textView0hr40m"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0hr 40m"
-                    android:textStyle="bold"
-                    android:textSize="18dp"
-                    android:textColor="@color/white" />
-            </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="0dp"
+            android:background="@android:color/white">
 
-            <!-- Turn Off Button -->
-            <LinearLayout
+            <!-- Status Card - Replaced with direct FrameLayout to eliminate MaterialCardView margins -->
+            <FrameLayout
+                android:id="@+id/statusCard"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:background="@color/topColor">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="0dp"
+                    android:padding="0dp">
+
+                    <!-- Lottie Animation View -->
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/lottieAnimationView"
+                        android:layout_width="match_parent"
+                        android:layout_height="350dp"
+                        android:layout_marginBottom="25dp"
+                        android:layout_gravity="center"
+                        app:lottie_autoPlay="true"
+                        app:lottie_loop="true" />
+
+                    <!-- Shield Image -->
+                    <ImageView
+                        android:id="@+id/innerImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="25dp"
+                        android:visibility="gone"
+                        android:src="@drawable/shield" />
+
+                    <!-- Status Text -->
+                    <TextView
+                        android:id="@+id/smallTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:visibility="gone"
+                        android:text="Firewall is off"
+                        android:paddingTop="90dp"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/white" />
+
+                    <!-- Stats Container -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="25dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/gifTextView1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Blocked"
+                            android:textColor="@android:color/darker_gray"
+                            android:textSize="14sp"
+                            android:alpha="0.8"
+                            android:gravity="center" />
+                        <TextView
+                            android:id="@+id/textView106"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="106"
+                            android:textStyle="bold"
+                            android:textSize="20sp"
+                            android:textColor="@android:color/white" />
+                        <TextView
+                            android:id="@+id/gifTextView3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Protected"
+                            android:textColor="@android:color/darker_gray"
+                            android:textSize="14sp"
+                            android:alpha="0.8"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:id="@+id/textView0hr40m"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0hr 40m"
+                            android:textStyle="bold"
+                            android:textSize="20sp"
+                            android:textColor="@android:color/white" />
+                    </LinearLayout>
+
+                    <!-- Turn Off Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/turnOffButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Turn Off"
+                        android:textColor="@android:color/white"
+                        android:backgroundTint="@android:color/transparent"
+                        app:strokeColor="@android:color/white"
+                        app:strokeWidth="1dp"
+                        android:layout_gravity="center|bottom"
+                        android:paddingStart="24dp"
+                        android:paddingEnd="24dp"
+                        app:cornerRadius="24dp"/>
+                </FrameLayout>
+            </FrameLayout>
+
+            <!-- Settings Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/settingsCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:orientation="vertical"
-                android:gravity="center">
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/turnOffButton"
-                    android:layout_width="wrap_content"
+                android:layout_margin="4dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Turn Off"
-                    android:textColor="@android:color/white"
-                    android:backgroundTint="@android:color/transparent"
-                    app:strokeColor="#D3D3D3"
-                    app:strokeWidth="2dp"
-                    android:layout_gravity="center" />
-            </LinearLayout>
-        </FrameLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:orientation="vertical"
+                    android:padding="8dp">
 
-    <!-- Settings List -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@android:color/white"
-        android:paddingRight="5dp"
-        android:paddingLeft="10dp"
-        android:paddingTop="15dp"
-        android:paddingBottom="10dp">
+                    <!-- Security -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/securityCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardElevation="0dp"
+                        app:cardCornerRadius="8dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:rippleColor="@android:color/darker_gray"
+                        android:foreground="?android:attr/selectableItemBackground">
 
-        <!-- Security -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="16dp"
-            android:clickable="true"
-            android:focusable="true">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="14dp">
 
-            <TextView
-                android:id="@+id/tvSecurity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Security"
-                android:textColor="@color/black"
-                android:textSize="16sp" />
+                            <TextView
+                                android:id="@+id/tvSecurity"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Security"
+                                android:textColor="@android:color/black"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/tvSecurityDesc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Block blacklist, notify of suspicious devices"
-                android:textSize="12sp"
-                android:textColor="@color/gray"
-                android:layout_below="@id/tvSecurity"/>
+                            <TextView
+                                android:id="@+id/tvSecurityDesc"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/tvSecurity"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginEnd="40dp"
+                                android:text="Block blacklist, notify of suspicious devices"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/tvSecurityLevel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="High"
-                android:layout_marginRight="25dp"
-                android:textSize="14sp"
-                android:textColor="#808080"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"/>
+                            <TextView
+                                android:id="@+id/tvSecurityLevel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="16dp"
+                                android:text="High"
+                                android:textColor="#808080"
+                                android:textSize="14sp" />
 
-            <!-- Arrow Image -->
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/right"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="8dp"/>
-        </RelativeLayout>
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:src="@drawable/right" />
+                        </RelativeLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-        <!-- Divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#E0E0E0"/>
+                    <!-- Blocklist -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/blocklistCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardElevation="0dp"
+                        app:cardCornerRadius="8dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:layout_marginTop="8dp"
+                        app:rippleColor="@android:color/darker_gray"
+                        android:foreground="?android:attr/selectableItemBackground">
 
-        <!-- Blocklist -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:clickable="true"
-            android:focusable="true">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="14dp">
 
-            <TextView
-                android:id="@+id/tvBlocklist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Blocklist"
-                android:textColor="@color/black"
-                android:textSize="16sp" />
+                            <TextView
+                                android:id="@+id/tvBlocklist"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Blocklist"
+                                android:textColor="@android:color/black"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/tvBlocklistDesc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Devices on blocklist will be automatically blocked"
-                android:textSize="12sp"
-                android:textColor="@color/gray"
-                android:layout_below="@id/tvBlocklist"/>
+                            <TextView
+                                android:id="@+id/tvBlocklistDesc"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/tvBlocklist"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginEnd="40dp"
+                                android:text="Devices on blocklist will be automatically blocked"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="12sp" />
 
-            <!-- Arrow Image -->
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/right"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="8dp"/>
-        </RelativeLayout>
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:src="@drawable/right" />
+                        </RelativeLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#E0E0E0"/>
+                    <!-- Password Strength -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/passwordCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardElevation="0dp"
+                        app:cardCornerRadius="8dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:layout_marginTop="8dp"
+                        app:rippleColor="@android:color/darker_gray"
+                        android:foreground="?android:attr/selectableItemBackground">
 
-        <!-- Password Strength -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:clickable="true"
-            android:focusable="true">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="14dp">
 
-            <TextView
-                android:id="@+id/tvPasswordStrength"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Password Strength"
-                android:textColor="@color/black"
-                android:textSize="16sp" />
+                            <TextView
+                                android:id="@+id/tvPasswordStrength"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Password Strength"
+                                android:textColor="@android:color/black"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/tvPasswordStrengthDesc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Use letters and numbers in your password"
-                android:textSize="12sp"
-                android:textColor="@color/gray"
-                android:layout_below="@id/tvPasswordStrength"/>
+                            <TextView
+                                android:id="@+id/tvPasswordStrengthDesc"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/tvPasswordStrength"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginEnd="40dp"
+                                android:text="Use letters and numbers in your password"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/tvPasswordLevel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="25dp"
-                android:text="Low"
-                android:textSize="14sp"
-                android:textColor="#FF0000"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"/>
+                            <TextView
+                                android:id="@+id/tvPasswordLevel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="16dp"
+                                android:text="Low"
+                                android:textColor="#FF0000"
+                                android:textSize="14sp" />
 
-            <!-- Arrow Image -->
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/right"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="8dp"/>
-        </RelativeLayout>
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:src="@drawable/right" />
+                        </RelativeLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#E0E0E0"/>
+                    <!-- Network Security -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/networkCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardElevation="0dp"
+                        app:cardCornerRadius="8dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:layout_marginTop="8dp"
+                        app:rippleColor="@android:color/darker_gray"
+                        android:foreground="?android:attr/selectableItemBackground">
 
-        <!-- Network Security -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:clickable="true"
-            android:focusable="true">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="14dp">
 
-            <TextView
-                android:id="@+id/tvNetworkSecurity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Network Security"
-                android:textSize="16sp"
-                android:textColor="@color/black"/>
+                            <TextView
+                                android:id="@+id/tvNetworkSecurity"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Network Security"
+                                android:textSize="16sp"
+                                android:textColor="@android:color/black"
+                                android:textStyle="bold"/>
 
-            <TextView
-                android:id="@+id/tvNetworkSecurityDesc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Use a password different from Wi-Fi password"
-                android:textSize="12sp"
-                android:textColor="@color/gray"
-                android:layout_below="@id/tvNetworkSecurity"/>
+                            <TextView
+                                android:id="@+id/tvNetworkSecurityDesc"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/tvNetworkSecurity"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginEnd="120dp"
+                                android:text="Use a password different from Wi-Fi password"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/tvNetworkSecurityLevel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Medium"
-                android:layout_marginRight="25dp"
-                android:textSize="14sp"
-                android:textColor="#808080"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"/>
+                            <TextView
+                                android:id="@+id/tvNetworkSecurityLevel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="16dp"
+                                android:text="Medium"
+                                android:textColor="#808080"
+                                android:textSize="14sp" />
 
-            <!-- Arrow Image -->
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/right"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="8dp"/>
-        </RelativeLayout>
-    </LinearLayout>
-</LinearLayout>
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:src="@drawable/right" />
+                        </RelativeLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

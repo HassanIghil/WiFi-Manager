@@ -1,7 +1,9 @@
 package com.example.wifimanager.ui;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.wifi.WifiInfo;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,7 +52,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HomeFragment extends Fragment {
 
     private static final String TAG = "HomeFragment";
-    private static final int REFRESH_INTERVAL = 2000; // 2 seconds
+    private static final int REFRESH_INTERVAL = 5000; // 5 seconds
     private static final int DEVICE_REFRESH_INTERVAL = 5000; // 5 seconds
 
     // Fragment state control
@@ -58,15 +61,18 @@ public class HomeFragment extends Fragment {
     private Handler handler;
     private SpeedTestRunnable speedTestRunnable;
     private DeviceListRunnable deviceListRunnable;
+    private BroadcastReceiver routerNameReceiver;
 
     // UI Components
     private TextView uploadSpeedTextView, downloadSpeedTextView;
+    private TextView routerNameTextView;
     private DeviceAdapter adapter;
-    private String STOK;
-    private TextView statusTextView;
+    private String STOK;    private TextView statusTextView;
     private ImageView arrow;
     private SharedPreferences sharedPreferences;
     private boolean isRefreshing = false;
+    private com.airbnb.lottie.LottieAnimationView loadingAnimation;
+    private RecyclerView recyclerView;
 
     // Add this method to create a new instance of HomeFragment
     public static HomeFragment newInstance(String stok, String routerName) {
@@ -135,6 +141,7 @@ public class HomeFragment extends Fragment {
         // Initialize components
         setupViews(view);
         setupRecyclerView(view);
+        setupRouterNameReceiver();
 
         // Initialize statusTextView
         statusTextView = view.findViewById(R.id.status);
@@ -178,13 +185,12 @@ public class HomeFragment extends Fragment {
             // Refresh firewall state when returning from Firewall activity
             checkFirewallState();
         }
-    }
-
-    private void setupViews(View view) {
-        // Add router name initialization
-        TextView routerNameTextView = view.findViewById(R.id.routername);
+    }    private void setupViews(View view) {
+        // Initialize router name TextView
+        routerNameTextView = view.findViewById(R.id.routername);
         uploadSpeedTextView = view.findViewById(R.id.upload);
         downloadSpeedTextView = view.findViewById(R.id.textView4);
+        loadingAnimation = view.findViewById(R.id.loadingAnimation);
 
         // Retrieve router name from arguments
         if (getArguments() != null) {
@@ -203,11 +209,11 @@ public class HomeFragment extends Fragment {
                 .asGif()
                 .load(R.drawable.down_arrow)
                 .into(downArrow);
-    }
-
-    private void setupRecyclerView(View view) {
-        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
+    }    private void setupRecyclerView(View view) {
+        recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setVisibility(View.VISIBLE); // Keep RecyclerView visible
+        loadingAnimation.setVisibility(View.VISIBLE); // Show loading initially
 
         // Ensure STOK is retrieved from arguments first
         if (getArguments() != null) {
@@ -220,11 +226,26 @@ public class HomeFragment extends Fragment {
             intent.putExtra("DEVICE_NAME", device.getName());
             intent.putExtra("DEVICE_IP", device.getIp().get(0).getIp());
             intent.putExtra("DEVICE_MAC", device.getMac());
-            intent.putExtra("STOK", STOK); // Make sure STOK is passed here
+            intent.putExtra("STOK", STOK);
             startActivity(intent);
         }, STOK, requireContext());
 
         recyclerView.setAdapter(adapter);
+    }
+
+    private void setupRouterNameReceiver() {
+        routerNameReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String newName = intent.getStringExtra("router_name");
+                if (newName != null && routerNameTextView != null) {
+                    routerNameTextView.setText(newName);
+                }
+            }
+        };
+
+        // Register broadcast receiver with standard method
+        ContextCompat.registerReceiver(requireActivity(), routerNameReceiver, new IntentFilter("ROUTER_NAME_UPDATED"), ContextCompat.RECEIVER_EXPORTED);
     }
 
     private void startPeriodicUpdates() {
@@ -252,6 +273,11 @@ public class HomeFragment extends Fragment {
             deviceListRunnable.clean();
         }
 
+        // Unregister the broadcast receiver
+        if (routerNameReceiver != null) {
+            requireActivity().unregisterReceiver(routerNameReceiver);
+        }
+
         // Clear Glide resources if the view exists
         View view = getView();
         if (view != null) {
@@ -262,11 +288,24 @@ public class HomeFragment extends Fragment {
                 Glide.with(this).clear(downArrow);
             }
         }
-    }
-
-    private void fetchConnectedDevices(boolean isManualRefresh) {
+    }    private void fetchConnectedDevices(boolean isManualRefresh) {
         if (!isFragmentActive.get()) return;
 
+        if (!isManualRefresh && adapter.getItemCount() > 0) {
+            // If it's an automatic refresh and we already have items, don't show loading
+            executeDeviceFetch();
+            return;
+        }
+
+        // Show loading for manual refresh or initial load
+        requireActivity().runOnUiThread(() -> {
+            loadingAnimation.setVisibility(View.VISIBLE);
+        });
+
+        executeDeviceFetch();
+    }
+
+    private void executeDeviceFetch() {
         new Thread(() -> {
             try {
                 String urlStr = "http://192.168.31.1/cgi-bin/luci/;stok=" + STOK + "/api/misystem/devicelist";
@@ -301,17 +340,17 @@ public class HomeFragment extends Fragment {
 
                 // Sort the list to prioritize the current device
                 Collections.sort(devices, (device1, device2) -> {
-                    String ip1 = device1.getIp().get(0).getIp(); // Assuming each device has at least one IP
+                    String ip1 = device1.getIp().get(0).getIp();
                     String ip2 = device2.getIp().get(0).getIp();
 
                     boolean isDevice1Current = ip1.equalsIgnoreCase(currentDeviceIp);
                     boolean isDevice2Current = ip2.equalsIgnoreCase(currentDeviceIp);
                     if (isDevice1Current) {
-                        return -1; // Current device comes first
+                        return -1;
                     } else if (isDevice2Current) {
-                        return 1; // Current device comes first
+                        return 1;
                     } else {
-                        return 0; // Maintain the original order for other devices
+                        return 0;
                     }
                 });
 
@@ -334,10 +373,11 @@ public class HomeFragment extends Fragment {
     private void updateRefreshingState(boolean isRefreshing, String titleText) {
         updateUI(() -> {
             this.isRefreshing = isRefreshing;
-
-            // Explicitly notify the adapter again (optional if you're worried about race conditions)
-            if (!isRefreshing && adapter != null) {
-                adapter.notifyDataSetChanged();
+            loadingAnimation.setVisibility(View.GONE);
+            
+            // Only show loading if we have no items and are still refreshing
+            if (isRefreshing && adapter != null && adapter.getItemCount() == 0) {
+                loadingAnimation.setVisibility(View.VISIBLE);
             }
         });
     }

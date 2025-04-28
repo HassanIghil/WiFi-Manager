@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,12 +15,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.wifimanager.R;
+import com.example.wifimanager.database.DatabaseHelper;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 
 public class notification_settings extends AppCompatActivity {
@@ -34,11 +32,22 @@ public class notification_settings extends AppCompatActivity {
     private MaterialCardView dndCardView;
     private int fromHour = 23, fromMinute = 0;
     private int toHour = 7, toMinute = 0;
+    
+    private DatabaseHelper dbHelper;
+    private static final String TABLE_NAME = DatabaseHelper.TABLE_NOTIFICATIONS;
+    private static final String KEY_DND_ENABLED = "dnd_enabled";
+    private static final String KEY_ROUTER_NOTIFICATIONS = "router_notifications";
+    private static final String KEY_FROM_HOUR = "from_hour";
+    private static final String KEY_FROM_MINUTE = "from_minute";
+    private static final String KEY_TO_HOUR = "to_hour";
+    private static final String KEY_TO_MINUTE = "to_minute";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification_settings);
+
+        dbHelper = DatabaseHelper.getInstance(this);
 
         // Set up toolbar with back arrow
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -65,8 +74,8 @@ public class notification_settings extends AppCompatActivity {
         dndSettingsLayout = findViewById(R.id.layout_dnd_settings);
         dndCardView = findViewById(R.id.dnd_card);
 
-        // Set initial times
-        updateTimeDisplay();
+        // Load saved settings
+        loadSavedSettings();
 
         // Set up click listeners
         dndSettingsLayout.setOnClickListener(v -> {
@@ -82,15 +91,36 @@ public class notification_settings extends AppCompatActivity {
         // Router notifications switch state change listener
         switchRouterNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
             updateDndCardState(isChecked);
+            dbHelper.putBoolean(TABLE_NAME, KEY_ROUTER_NOTIFICATIONS, isChecked);
         });
 
         // DND switch state change listener
         switchDnd.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            dndSettingsLayout.setEnabled(isChecked);
             dndSettingsLayout.setAlpha(isChecked ? 1.0f : 0.5f);
+            dbHelper.putBoolean(TABLE_NAME, KEY_DND_ENABLED, isChecked);
         });
 
         // Initial state setup
         updateDndCardState(switchRouterNotifications.isChecked());
+    }
+
+    private void loadSavedSettings() {
+        // Load router notifications state
+        boolean routerNotifications = dbHelper.getBoolean(TABLE_NAME, KEY_ROUTER_NOTIFICATIONS, true);
+        switchRouterNotifications.setChecked(routerNotifications);
+        
+        // Load DND state
+        boolean dndEnabled = dbHelper.getBoolean(TABLE_NAME, KEY_DND_ENABLED, false);
+        switchDnd.setChecked(dndEnabled);
+        
+        // Load DND times
+        fromHour = dbHelper.getInt(TABLE_NAME, KEY_FROM_HOUR, 23);
+        fromMinute = dbHelper.getInt(TABLE_NAME, KEY_FROM_MINUTE, 0);
+        toHour = dbHelper.getInt(TABLE_NAME, KEY_TO_HOUR, 7);
+        toMinute = dbHelper.getInt(TABLE_NAME, KEY_TO_MINUTE, 0);
+        
+        updateTimeDisplay();
     }
 
     private void updateDndCardState(boolean notificationsEnabled) {
@@ -99,7 +129,7 @@ public class notification_settings extends AppCompatActivity {
             dndCardView.setEnabled(true);
             dndCardView.setAlpha(1.0f);
             switchDnd.setEnabled(true);
-            dndSettingsLayout.setEnabled(true);
+            dndSettingsLayout.setEnabled(switchDnd.isChecked());
         } else {
             // Disable DND card and turn off DND switch
             dndCardView.setEnabled(false);
@@ -143,9 +173,13 @@ public class notification_settings extends AppCompatActivity {
                         toHour = Integer.parseInt(toParts[0]);
                         toMinute = Integer.parseInt(toParts[1]);
 
-                        updateTimeDisplay();
+                        // Save to database
+                        dbHelper.putInt(TABLE_NAME, KEY_FROM_HOUR, fromHour);
+                        dbHelper.putInt(TABLE_NAME, KEY_FROM_MINUTE, fromMinute);
+                        dbHelper.putInt(TABLE_NAME, KEY_TO_HOUR, toHour);
+                        dbHelper.putInt(TABLE_NAME, KEY_TO_MINUTE, toMinute);
 
-                        // Here you would typically save these settings to SharedPreferences
+                        updateTimeDisplay();
                         Toast.makeText(this, "DND times updated", Toast.LENGTH_SHORT).show();
                     } catch (Exception e) {
                         Toast.makeText(this, "Invalid time format", Toast.LENGTH_SHORT).show();
@@ -175,8 +209,8 @@ public class notification_settings extends AppCompatActivity {
     }
 
     private void updateTimeDisplay() {
-        tvFromTime.setText(String.format(Locale.getDefault(), "From: %02d:%02d", fromHour, fromMinute));
-        tvToTime.setText(String.format(Locale.getDefault(), "To: %02d:%02d", toHour, toMinute));
+        tvFromTime.setText(String.format(Locale.getDefault(), "%02d:%02d", fromHour, fromMinute));
+        tvToTime.setText(String.format(Locale.getDefault(), "%02d:%02d", toHour, toMinute));
     }
 
     @Override

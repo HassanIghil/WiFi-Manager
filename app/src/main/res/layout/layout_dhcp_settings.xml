@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <RadioGroup
+        android:id="@+id/dns_config_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radio_auto_dns"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Configure DNS automatically" />
+
+        <RadioButton
+            android:id="@+id/radio_manual_dns"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Configure DNS manually" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:id="@+id/manual_dns_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="DNS1">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/dns1_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="DNS2">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/dns2_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+</LinearLayout>

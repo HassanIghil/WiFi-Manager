@@ -1,9 +1,9 @@
 package com.example.wifimanager;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -14,48 +14,81 @@ import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 
-public class LoginActivity extends AppCompatActivity {
-
-    private static final String TAG = "LoginActivity";
+public class LoginActivity extends AppCompatActivity {    private static final String TAG = "LoginActivity";
     private EditText passwordEditText;
     private String token;
+    private View loadingOverlay;
+    private com.google.android.material.textfield.TextInputLayout passwordLayout;
+    private com.airbnb.lottie.LottieAnimationView lottieAnimationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
+        super.onCreate(savedInstanceState);        setContentView(R.layout.activity_login);
+        loadingOverlay = findViewById(R.id.loadingOverlay);
+        lottieAnimationView = findViewById(R.id.lottieAnimationView);
         passwordEditText = findViewById(R.id.password);
+        passwordLayout = findViewById(R.id.passwordLayout);
 
-        // Handle login
+        // Clear error when user starts typing
+        passwordEditText.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                passwordLayout.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        });
+
         findViewById(R.id.loginButton).setOnClickListener(v -> {
             String password = passwordEditText.getText().toString();
             if (!password.isEmpty()) {
                 login(password);
             } else {
-                Toast.makeText(LoginActivity.this, "Password is required", Toast.LENGTH_SHORT).show();
+                passwordLayout.setError("Password is required");
             }
         });
     }
 
+    private void showLoading() {
+        runOnUiThread(() -> {
+            loadingOverlay.setVisibility(View.VISIBLE);
+            findViewById(R.id.loginButton).setEnabled(false);
+            passwordEditText.setEnabled(false);
+        });
+    }
+
+    private void hideLoading() {
+        runOnUiThread(() -> {
+            loadingOverlay.setVisibility(View.GONE);
+            findViewById(R.id.loginButton).setEnabled(true);
+            passwordEditText.setEnabled(true);
+        });
+    }
+
     private void login(String password) {
+        showLoading();
         new Thread(() -> {
-            try {
-                String urlStr = "http://192.168.31.1/cgi-bin/luci/api/xqsystem/login";
-                URL url = new URL(urlStr);
+            try {                URI uri = new URI("http://192.168.31.1/cgi-bin/luci/api/xqsystem/login");
+                URL url = uri.toURL();
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 
-                // Sending login data
                 String data = "username=admin&password=" + password;
                 connection.getOutputStream().write(data.getBytes());
 
-                int responseCode = connection.getResponseCode();
-                if (responseCode != HttpURLConnection.HTTP_OK) {
-                    runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Login failed. Response code: " + responseCode, Toast.LENGTH_SHORT).show());
+                int responseCode = connection.getResponseCode();                if (responseCode != HttpURLConnection.HTTP_OK) {
+                    hideLoading();
+                    runOnUiThread(() -> {
+                        passwordLayout.setError("Invalid password. Please check your credentials and try again.");
+                    });
                     return;
                 }
 
@@ -67,35 +100,35 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 reader.close();
 
-                // Parsing response to extract token
                 Gson gson = new Gson();
                 LoginResponse loginResponse = gson.fromJson(response.toString(), LoginResponse.class);
 
                 if (loginResponse != null && loginResponse.getToken() != null) {
                     token = loginResponse.getToken();
-                    // Now fetch the router name after successful login
-                    fetchRouterName(token);
-                } else {
-                    runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Login failed. No token received.", Toast.LENGTH_SHORT).show());
-                }
-
-            } catch (Exception e) {
+                    fetchRouterName(token);                } else {
+                    hideLoading();
+                    runOnUiThread(() -> {
+                        passwordLayout.setError("Login failed. Please check your password and try again.");
+                    });
+                }} catch (Exception e) {
                 e.printStackTrace();
+                hideLoading();
                 runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Login failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }finally {
+                hideLoading();
             }
         }).start();
     }
 
     private void fetchRouterName(String token) {
         new Thread(() -> {
-            try {
-                String urlStr = "http://192.168.31.1/cgi-bin/luci/;stok=" + token + "/api/misystem/router_name";
-                URL url = new URL(urlStr);
+            try {                URI uri = new URI("http://192.168.31.1/cgi-bin/luci/;stok=" + token + "/api/misystem/router_name");
+                URL url = uri.toURL();
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
 
-                int responseCode = connection.getResponseCode();
-                if (responseCode != HttpURLConnection.HTTP_OK) {
+                int responseCode = connection.getResponseCode();                if (responseCode != HttpURLConnection.HTTP_OK) {
+                    hideLoading();
                     runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Failed to fetch router name. Response code: " + responseCode, Toast.LENGTH_SHORT).show());
                     return;
                 }
@@ -108,30 +141,21 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 reader.close();
 
-                // Parsing router name from the response
                 Gson gson = new Gson();
                 RouterNameResponse routerNameResponse = gson.fromJson(response.toString(), RouterNameResponse.class);
 
                 if (routerNameResponse != null && routerNameResponse.getName() != null) {
                     String routerName = routerNameResponse.getName();
 
-                    // Save login status, token, and router name to SharedPreferences
-                    SharedPreferences sharedPreferences = getSharedPreferences("MyWiFiApp", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("stok", token); // Save token
-                    editor.putString("ROUTER_NAME", routerName); // Save router name
-                    editor.putBoolean("isLoggedIn", true); // Save login status
-                    editor.apply();
-
-                    // Navigate to MainActivity
+                    // Navigate to MainActivity with just the current token and router name
                     runOnUiThread(() -> {
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.putExtra("ROUTER_NAME", routerName); // Pass router name
-                        intent.putExtra("STOK", token); // Pass token
+                        intent.putExtra("ROUTER_NAME", routerName);
+                        intent.putExtra("STOK", token);
                         startActivity(intent);
-                        finish(); // Finish LoginActivity to prevent going back to it
-                    });
-                } else {
+                        finish();
+                    });                } else {
+                    hideLoading();
                     runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Router name not found", Toast.LENGTH_SHORT).show());
                 }
 

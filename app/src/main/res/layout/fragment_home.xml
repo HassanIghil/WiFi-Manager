@@ -123,7 +123,20 @@
             android:background="#E0E0E0"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/speedTestLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/speedTestLayout" />        <!-- Loading animation overlay -->
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loadingAnimation"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:elevation="4dp"
+            android:visibility="gone"
+            app:lottie_rawRes="@raw/loading"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:layout_constraintTop_toBottomOf="@+id/separatorLine"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- RecyclerView for scrollable content -->
         <androidx.recyclerview.widget.RecyclerView

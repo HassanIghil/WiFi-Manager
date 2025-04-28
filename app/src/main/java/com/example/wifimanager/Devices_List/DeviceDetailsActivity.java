@@ -1,5 +1,11 @@
 package com.example.wifimanager.Devices_List;
 
+import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -7,21 +13,26 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowInsets;
-import android.view.WindowInsetsController;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.work.BackoffPolicy;
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.wifimanager.R;
+import com.example.wifimanager.receivers.DeviceMonitorReceiver;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -30,6 +41,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 public class DeviceDetailsActivity extends AppCompatActivity {
@@ -58,20 +70,6 @@ public class DeviceDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_details);
 
-        // Set up edge-to-edge display
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            getWindow().setDecorFitsSystemWindows(false);
-//            WindowInsetsController controller = getWindow().getInsetsController();
-//            if (controller != null) {
-//                controller.show(WindowInsets.Type.statusBars());
-//            }
-//        } else {
-//            getWindow().setFlags(
-//                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-//                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-//            );
-//        }
-
         // Set up toolbar with back arrow
         Toolbar toolbar = findViewById(R.id.toolbarDevice);
         setSupportActionBar(toolbar);
@@ -83,11 +81,8 @@ public class DeviceDetailsActivity extends AppCompatActivity {
 
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-
         // Get device name from intent
         String deviceName = getIntent().getStringExtra("DEVICE_NAME");
-
-
 
         // Initialize views
         notificationImageView = findViewById(R.id.notification_icon);
@@ -122,14 +117,28 @@ public class DeviceDetailsActivity extends AppCompatActivity {
         deviceMacTextView.setText("MAC: " + deviceMac);
         updateSpeedDisplay(uploadSpeed, downloadSpeed);
 
-        // Initialize SharedPreferences (only for notification and qos)
+        // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences("image_state", MODE_PRIVATE);
+        SharedPreferences monitorPrefs = getSharedPreferences("device_monitor", MODE_PRIVATE);
 
-        // Restore notification and qos image states from SharedPreferences
-        if (sharedPreferences.getBoolean("notification_image_active_" + deviceMac, false)) {
+        // Restore notification and qos image states
+        boolean isGlobalMonitoring = monitorPrefs.getBoolean("global_monitoring_enabled", false);
+        if (isGlobalMonitoring) {
+            // If global monitoring is on, device is automatically monitored
             notificationImageView.setImageResource(R.drawable.notificatio_active);
+            notificationImageView.setEnabled(false); // Disable the button
+            notificationImageView.setAlpha(0.5f); // Show it's disabled
+            notificationText.setText("Monitoring (Global)");
         } else {
-            notificationImageView.setImageResource(R.drawable.notification);
+            // Individual device monitoring
+            if (monitorPrefs.getBoolean("monitoring_" + deviceMac, false)) {
+                notificationImageView.setImageResource(R.drawable.notificatio_active);
+            } else {
+                notificationImageView.setImageResource(R.drawable.notification);
+            }
+            notificationImageView.setEnabled(true);
+            notificationImageView.setAlpha(1.0f);
+            notificationText.setText("Monitor Device");
         }
 
         if (sharedPreferences.getBoolean("qos_image_active_" + deviceMac, false)) {
@@ -144,14 +153,16 @@ public class DeviceDetailsActivity extends AppCompatActivity {
 
         // Set up notification image click listener
         notificationImageView.setOnClickListener(v -> {
-            // Hide images and texts
-            hideViews();
-            // Show the animation
-            lottieAnimationView.setVisibility(View.VISIBLE);
-            lottieAnimationView.playAnimation();
+            if (!isGlobalMonitoring) {
+                // Hide images and texts
+                hideViews();
+                // Show the animation
+                lottieAnimationView.setVisibility(View.VISIBLE);
+                lottieAnimationView.playAnimation();
 
-            // Toggle notification state
-            toggleNotificationState();
+                // Toggle notification state
+                toggleNotificationState();
+            }
         });
 
         // Set up qos image click listener
@@ -240,19 +251,106 @@ public class DeviceDetailsActivity extends AppCompatActivity {
     }
 
     private void toggleNotificationState() {
-        if (notificationImageView.getDrawable().getConstantState().equals(getResources().getDrawable(R.drawable.notification).getConstantState())) {
+        SharedPreferences monitorPrefs = getSharedPreferences("device_monitor", MODE_PRIVATE);
+        boolean isGlobalMonitoring = monitorPrefs.getBoolean("global_monitoring_enabled", false);
+        
+        if (isGlobalMonitoring) {
+            Toast.makeText(this, "Global monitoring is enabled. Configure in settings.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        123);
+                return;
+            }
+        }
+
+        boolean isMonitoring = monitorPrefs.getBoolean("monitoring_" + deviceMac, false);
+        String deviceName = ((TextView) findViewById(R.id.deviceName)).getText().toString();
+        
+        // Setup AlarmManager
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, DeviceMonitorReceiver.class);
+        intent.putExtra("device_mac", deviceMac);
+        intent.putExtra("stok", stok);
+        
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+            this, 
+            deviceMac.hashCode(), 
+            intent, 
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        if (!isMonitoring) {
+            // Start monitoring
+            monitorPrefs.edit()
+                .putString("monitored_mac", deviceMac)
+                .putString("stok", stok)
+                .putString("device_name_" + deviceMac, deviceName)  // Store device name
+                .putBoolean("monitoring_" + deviceMac, true)
+                .apply();
+
+            // Schedule exact alarm for checking device status
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setRepeating(
+                    AlarmManager.RTC_WAKEUP,
+                    System.currentTimeMillis(),
+                    15 * 1000, // Check every 15 seconds
+                    pendingIntent
+                );
+            } else {
+                alarmManager.setRepeating(
+                    AlarmManager.RTC_WAKEUP,
+                    System.currentTimeMillis(),
+                    15 * 1000, // Check every 15 seconds
+                    pendingIntent
+                );
+            }
+                    
             notificationImageView.setImageResource(R.drawable.notificatio_active);
-            sharedPreferences.edit().putBoolean("notification_image_active_" + deviceMac, true).apply();
+            notificationText.setText("Monitoring");
+            Toast.makeText(this, "Device monitoring started", Toast.LENGTH_SHORT).show();
         } else {
+            // Stop monitoring
+            monitorPrefs.edit()
+                .remove("monitored_mac")
+                .remove("stok")
+                .putBoolean("monitoring_" + deviceMac, false)
+                .apply();
+            
+            // Cancel AlarmManager
+            alarmManager.cancel(pendingIntent);
+                    
             notificationImageView.setImageResource(R.drawable.notification);
-            sharedPreferences.edit().putBoolean("notification_image_active_" + deviceMac, false).apply();
+            notificationText.setText("Monitor Device");
+            Toast.makeText(this, "Device monitoring stopped", Toast.LENGTH_SHORT).show();
         }
 
         // Hide the animation and show views after it finishes
         new Handler().postDelayed(() -> {
             lottieAnimationView.setVisibility(View.GONE);
             showViews();
-        }, 2000); // Adjust the delay based on animation duration
+        }, 2000);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                         @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 123) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, retry enabling notifications
+                toggleNotificationState();
+            } else {
+                Toast.makeText(this, "Notification permission is required to monitor devices", 
+                    Toast.LENGTH_LONG).show();
+                notificationImageView.setImageResource(R.drawable.notification);
+            }
+        }
     }
 
     private void toggleQoSState() {

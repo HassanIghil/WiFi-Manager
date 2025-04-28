@@ -1,7 +1,6 @@
 package com.example.wifimanager.Settings_Components;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,18 +14,22 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.wifimanager.R;
+import com.example.wifimanager.database.DatabaseHelper;
 
 public class Security extends AppCompatActivity {
     private ImageView highLevelCheck, mediumLevelCheck, lowLevelCheck;
     private LinearLayout highLevelLayout, mediumLevelLayout, lowLevelLayout;
-    private static final String PREFS_NAME = "SecurityPrefs";
+    private static final String TABLE_NAME = DatabaseHelper.TABLE_SECURITY;
     private static final String KEY_SECURITY_LEVEL = "security_level";
     private String currentLevel;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_security);
+
+        dbHelper = DatabaseHelper.getInstance(this);
 
         initViews();
         setupToolbar();
@@ -67,8 +70,7 @@ public class Security extends AppCompatActivity {
     }
 
     private void loadSavedSecurityLevel() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        currentLevel = prefs.getString(KEY_SECURITY_LEVEL, "high");
+        currentLevel = dbHelper.getString(TABLE_NAME, KEY_SECURITY_LEVEL, "high");
         setSelectedLevel(currentLevel);
     }
 
@@ -101,17 +103,11 @@ public class Security extends AppCompatActivity {
     }
 
     private void saveSecurityLevel(String level) {
-        getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-                .edit()
-                .putString(KEY_SECURITY_LEVEL, level)
-                .apply();
+        dbHelper.putString(TABLE_NAME, KEY_SECURITY_LEVEL, level);
     }
 
     @Override
     public void onBackPressed() {
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("selected_level", currentLevel);
-        setResult(RESULT_OK, resultIntent);
         super.onBackPressed();
     }
 

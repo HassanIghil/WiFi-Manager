@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Account and Password - Always active -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Account">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/account_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Password">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/password_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Configuration Mode -->
+    <RadioGroup
+        android:id="@+id/dns_config_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radio_auto_configure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Auto configure" />
+
+        <RadioButton
+            android:id="@+id/radio_manual_configure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Configure manually" />
+    </RadioGroup>
+
+    <!-- Other Settings (can be inactive) -->
+    <LinearLayout
+        android:id="@+id/other_settings_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp">
+
+        <CheckBox
+            android:id="@+id/special_isp_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Special ISP mode"
+            android:enabled="false" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="MTU">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/mtu_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="1480"
+                android:enabled="false" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Bytes (It's not recommended to modify if the network is normal)"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Service Name (Optional)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/service_name_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:enabled="false" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <!-- DNS Configuration (At the bottom) -->
+    <LinearLayout
+        android:id="@+id/dns_fields_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="DNS1">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/dns1_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:enabled="false" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="DNS2">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/dns2_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:enabled="false" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+</LinearLayout>

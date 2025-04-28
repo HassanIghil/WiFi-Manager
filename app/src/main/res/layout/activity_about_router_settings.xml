@@ -33,7 +33,8 @@
     <!-- Main Content -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:padding="16dp">
 
         <LinearLayout
@@ -87,7 +88,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="10dp"
-                            android:text="Xiaomi_2251"
+                            android:hint="Loading..."
                             android:textColor="@color/textSecondary"
                             android:textSize="16sp"
                             android:padding="4dp"
@@ -131,7 +132,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="10dp"
-                            android:text="Home"
+                            android:hint="Loading..."
                             android:textColor="@color/textSecondary"
                             android:textSize="16sp"
                             android:fontFamily="sans-serif" />
@@ -211,4 +212,20 @@
             </androidx.cardview.widget.CardView>
         </LinearLayout>
     </ScrollView>
+
+    <!-- Save Button -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/rounded_button_bg"
+        android:foreground="?attr/selectableItemBackground"
+        android:text="Save Changes"
+        android:textColor="@color/white"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:paddingVertical="12dp"
+        android:fontFamily="sans-serif-medium" />
+
 </LinearLayout>

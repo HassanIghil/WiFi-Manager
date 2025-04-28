@@ -79,6 +79,7 @@ public class SettingsFragment extends Fragment {
         LinearLayout moreToolsButton = view.findViewById(R.id.more_tools_button);
         moreToolsButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), Smart_life.class);
+            intent.putExtra("STOK", STOK);  // Add this line to pass the token
             startActivity(intent);
         });
 

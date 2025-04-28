@@ -1,7 +1,6 @@
 package com.example.wifimanager;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -23,20 +22,11 @@ public class splashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                SharedPreferences sharedPreferences = getSharedPreferences("MyWiFiApp", MODE_PRIVATE);
-                boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
-                String stok = sharedPreferences.getString("stok", null);
-
-                Intent intent;
-                if (isLoggedIn && stok != null) {
-                    intent = new Intent(splashActivity.this, MainActivity.class);
-                    intent.putExtra("STOK", stok); // Pass token to MainActivity
-                } else {
-                    intent = new Intent(splashActivity.this, LoginActivity.class);
-                }
+                // Always show login screen
+                Intent intent = new Intent(splashActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
             }
-        }, 5000); // 3 seconds splash screen duration
+        }, 5000); // 5 seconds splash screen duration
     }
 }

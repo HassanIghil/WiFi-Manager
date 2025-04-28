@@ -7,10 +7,13 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -24,6 +27,7 @@
         android:theme="@style/Theme.WiFiManager"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <activity
             android:name=".smart_life_options.WiFiScheduleRebootActivity"
             android:exported="false" />
@@ -51,6 +55,16 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- WorkManager configuration -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup" />
         </provider>
 
         <activity
@@ -86,6 +100,19 @@
         <activity
             android:name=".Settings_Components.notification_settings"
             android:exported="false" />
+
+        <!-- WiFi Schedule Receiver -->
+        <receiver 
+            android:name=".receivers.WiFiScheduleReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.example.wifimanager.WIFI_SCHEDULE_ON" />
+                <action android:name="com.example.wifimanager.WIFI_SCHEDULE_OFF" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name=".Settings_Components.hardware_settings"
             android:exported="false" />
@@ -133,6 +160,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver 
+            android:name=".receivers.DeviceMonitorReceiver" 
+            android:exported="false" />
     </application>
 
 </manifest>

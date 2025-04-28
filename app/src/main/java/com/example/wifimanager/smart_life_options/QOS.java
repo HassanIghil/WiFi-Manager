@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -17,8 +18,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.wifimanager.R;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import org.json.JSONObject;
 
 public class QOS extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
@@ -33,11 +40,21 @@ public class QOS extends AppCompatActivity {
     private TextView uploadSpeedValue;
     private TextView downloadSpeedValue;
     private LottieAnimationView animationView;
+    private String stok;
+    private RequestQueue requestQueue;
+
+    private static final String BASE_URL = "http://192.168.31.1/cgi-bin/luci/;stok=";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qos);
+
+        // Initialize RequestQueue
+        requestQueue = Volley.newRequestQueue(this);
+
+        // Get stok from intent
+        stok = getIntent().getStringExtra("STOK");
 
         // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
@@ -50,6 +67,9 @@ public class QOS extends AppCompatActivity {
 
         // Load saved settings and setup animation initial state
         loadSavedSettings();
+
+        // Fetch current bandwidth values
+        fetchCurrentBandwidth();
 
         // Setup click listeners
         setupClickListeners();
@@ -128,7 +148,6 @@ public class QOS extends AppCompatActivity {
     private void setupClickListeners() {
         qosSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                // Check if speeds are set before enabling QoS
                 if (uploadSpeedValue.getText().toString().equals("Unknown") || 
                     downloadSpeedValue.getText().toString().equals("Unknown")) {
                     Toast.makeText(QOS.this, "Please set bandwidth limits first", Toast.LENGTH_SHORT).show();
@@ -136,32 +155,61 @@ public class QOS extends AppCompatActivity {
                     showSpeedSettingsDialog();
                     return;
                 }
-                // Play animation once when enabling QoS
-                animationView.setProgress(0);
-                animationView.setRepeatCount(0);
-                animationView.playAnimation();
-                priorityModeLayout.setVisibility(View.VISIBLE);
-                Toast.makeText(QOS.this, "QoS enabled", Toast.LENGTH_SHORT).show();
-            } else {
-                // Reset animation to initial state when disabling QoS
-                animationView.setProgress(0);
-                animationView.pauseAnimation();
-                priorityModeLayout.setVisibility(View.GONE);
-                Toast.makeText(QOS.this, "QoS disabled", Toast.LENGTH_SHORT).show();
             }
-            saveSettings();
+            setQoSState(isChecked);
         });
 
         priorityRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            String mode;
-            if (checkedId == R.id.radioAutoMode) mode = "auto";
-            else if (checkedId == R.id.radioGameFirst) mode = "game";
-            else if (checkedId == R.id.radioWebpageFirst) mode = "webpage";
-            else if (checkedId == R.id.radioVideoFirst) mode = "video";
+            int mode;
+            if (checkedId == R.id.radioAutoMode) mode = 3;
+            else if (checkedId == R.id.radioGameFirst) mode = 4;
+            else if (checkedId == R.id.radioWebpageFirst) mode = 5;
+            else if (checkedId == R.id.radioVideoFirst) mode = 6;
             else return;
 
-            sharedPreferences.edit().putString(KEY_PRIORITY_MODE, mode).apply();
+            setQoSMode(mode);
         });
+    }
+
+    private void setQoSState(boolean enabled) {
+        String url = BASE_URL + stok + "/api/misystem/qos_switch?on=" + (enabled ? "1" : "0");
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    try {
+                        if (response.getInt("code") == 0) {
+                            saveSettings();
+                            if (enabled) {
+                                priorityModeLayout.setVisibility(View.VISIBLE);
+                                animationView.setProgress(0);
+                                animationView.setRepeatCount(0);
+                                animationView.playAnimation();
+                            } else {
+                                priorityModeLayout.setVisibility(View.GONE);
+                                animationView.setProgress(0);
+                                animationView.pauseAnimation();
+                            }
+                            Toast.makeText(this, "QoS " + (enabled ? "enabled" : "disabled"), Toast.LENGTH_SHORT).show();
+                        } else {
+                            qosSwitch.setChecked(!enabled);
+                            Toast.makeText(this, "Failed to " + (enabled ? "enable" : "disable") + " QoS", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        qosSwitch.setChecked(!enabled);
+                    }
+                },
+                error -> {
+                    error.printStackTrace();
+                    qosSwitch.setChecked(!enabled);
+                    Toast.makeText(this, "Error toggling QoS", Toast.LENGTH_SHORT).show();
+                }
+        );
+
+        requestQueue.add(request);
     }
 
     private void showSpeedSettingsDialog() {
@@ -169,59 +217,177 @@ public class QOS extends AppCompatActivity {
         EditText uploadInput = dialogView.findViewById(R.id.uploadSpeedInput);
         EditText downloadInput = dialogView.findViewById(R.id.downloadSpeedInput);
 
-        // Pre-fill existing values if they exist
-        if (!uploadSpeedValue.getText().toString().equals("Unknown")) {
-            uploadInput.setText(uploadSpeedValue.getText().toString().replace(" Mbps", ""));
-        }
-        if (!downloadSpeedValue.getText().toString().equals("Unknown")) {
-            downloadInput.setText(downloadSpeedValue.getText().toString().replace(" Mbps", ""));
-        }
+        // Clear any existing hints
+        uploadInput.setHint("");
+        downloadInput.setHint("");
+
+        // Get current bandwidth values
+        String url = BASE_URL + stok + "/api/misystem/qos_info";
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        if (response.getInt("code") == 0) {
+                            JSONObject band = response.getJSONObject("band");
+                            // Get raw values without conversion
+                            int uploadValue = band.getInt("upload");
+                            int downloadValue = band.getInt("download");
+                            
+                            // Show values directly in the input fields
+                            uploadInput.setText(String.valueOf(uploadValue));
+                            downloadInput.setText(String.valueOf(downloadValue));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                },
+                error -> error.printStackTrace()
+        );
+        requestQueue.add(request);
 
         AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setView(dialogView)
-                .setPositiveButton("Save", (dialogInterface, i) -> {
-                    String uploadSpeed = uploadInput.getText().toString().trim();
-                    String downloadSpeed = downloadInput.getText().toString().trim();
+                .setTitle("Set Speed Limits (Mbit/s)")
+                .setPositiveButton("Save", null) // Set to null initially
+                .setNegativeButton("Cancel", null)
+                .create();
 
-                    if (uploadSpeed.isEmpty() || downloadSpeed.isEmpty()) {
-                        Toast.makeText(this, "Please enter both upload and download speeds", Toast.LENGTH_SHORT).show();
+        // Override the click listener to prevent dialog from closing if validation fails
+        dialog.setOnShowListener(dialogInterface -> {
+            Button button = ((AlertDialog) dialogInterface).getButton(AlertDialog.BUTTON_POSITIVE);
+            button.setOnClickListener(view -> {
+                String uploadSpeed = uploadInput.getText().toString().trim();
+                String downloadSpeed = downloadInput.getText().toString().trim();
+
+                if (uploadSpeed.isEmpty() || downloadSpeed.isEmpty()) {
+                    Toast.makeText(this, "Please enter both upload and download speeds", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                try {
+                    int upload = Integer.parseInt(uploadSpeed);
+                    int download = Integer.parseInt(downloadSpeed);
+
+                    // Validate upload speed (0 < upload <= 10000)
+                    if (upload > 10000) {
+                        Toast.makeText(this, "Enter up to 10000 Mbit/s for upload speed", Toast.LENGTH_SHORT).show();
+                        return;
+                    } else if (upload <= 0) {
+                        Toast.makeText(this, "Use 0.01 or more for upload speed", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    try {
-                        float upload = Float.parseFloat(uploadSpeed);
-                        float download = Float.parseFloat(downloadSpeed);
-                        
-                        if (upload <= 0 || download <= 0) {
-                            Toast.makeText(this, "Speeds must be greater than 0", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        updateSpeedInfo(uploadSpeed, downloadSpeed);
-                        saveSettings();
-                    } catch (NumberFormatException e) {
-                        Toast.makeText(this, "Please enter valid numbers", Toast.LENGTH_SHORT).show();
+                    // Validate download speed (0 < download <= 2048)
+                    if (download > 2048) {
+                        Toast.makeText(this, "Enter up to 2048 Mbit/s for download speed", Toast.LENGTH_SHORT).show();
+                        return;
+                    } else if (download <= 0) {
+                        Toast.makeText(this, "Use 0.01 or more for download speed", Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                })
-                .setNegativeButton("Cancel", null)
-                .create();
+
+                    // Convert to Mb/s by dividing by 8 before saving
+                    int uploadMbs = upload / 8;
+                    int downloadMbs = download / 8;
+
+                    // Update UI with Mb/s values
+                    uploadSpeedValue.setText(uploadMbs + " Mbit/s");
+                    downloadSpeedValue.setText(downloadMbs + " Mbit/s");
+                    sharedPreferences.edit()
+                            .putString(KEY_UPLOAD_SPEED, uploadMbs + " Mbit/s")
+                            .putString(KEY_DOWNLOAD_SPEED, downloadMbs + " Mbit/s")
+                            .apply();
+                    
+                    dialog.dismiss();
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Please enter valid numbers", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
 
         dialog.show();
     }
 
-    private void updateSpeedInfo(String uploadSpeed, String downloadSpeed) {
-        uploadSpeedValue.setText(uploadSpeed + " Mbps");
-        downloadSpeedValue.setText(downloadSpeed + " Mbps");
-        sharedPreferences.edit()
-                .putString(KEY_UPLOAD_SPEED, uploadSpeed + " Mbps")
-                .putString(KEY_DOWNLOAD_SPEED, downloadSpeed + " Mbps")
-                .apply();
+    private void setQoSMode(int mode) {
+        String url = BASE_URL + stok + "/api/misystem/qos_mode?mode=" + mode;
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    try {
+                        if (response.getInt("code") == 0) {
+                            String modeStr;
+                            switch (mode) {
+                                case 3:
+                                    modeStr = "auto";
+                                    break;
+                                case 4:
+                                    modeStr = "game";
+                                    break;
+                                case 5:
+                                    modeStr = "webpage";
+                                    break;
+                                case 6:
+                                    modeStr = "video";
+                                    break;
+                                default:
+                                    modeStr = "auto";
+                            }
+                            sharedPreferences.edit().putString(KEY_PRIORITY_MODE, modeStr).apply();
+                            Toast.makeText(this, "QoS mode updated", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(this, "Failed to change QoS mode", Toast.LENGTH_SHORT).show();
+                            loadSavedSettings();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        loadSavedSettings();
+                    }
+                },
+                error -> {
+                    Toast.makeText(this, "Error setting QoS mode", Toast.LENGTH_SHORT).show();
+                    loadSavedSettings();
+                }
+        );
+
+        requestQueue.add(request);
     }
 
     private void saveSettings() {
         sharedPreferences.edit()
                 .putBoolean(KEY_QOS_ENABLED, qosSwitch.isChecked())
                 .apply();
+    }
+
+    private void fetchCurrentBandwidth() {
+        String url = BASE_URL + stok + "/api/misystem/qos_info";
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        if (response.getInt("code") == 0) {
+                            JSONObject band = response.getJSONObject("band");
+                            // Convert to Mbps by dividing by 8
+                            int uploadMbps = band.getInt("upload") / 8;
+                            int downloadMbps = band.getInt("download") / 8;
+                            
+                            // Update UI with the values
+                            uploadSpeedValue.setText(uploadMbps + " Mbit/s");
+                            downloadSpeedValue.setText(downloadMbps + " Mbit/s");
+                            
+                            // Save the values
+                            sharedPreferences.edit()
+                                .putString(KEY_UPLOAD_SPEED, uploadMbps + " Mbit/s")
+                                .putString(KEY_DOWNLOAD_SPEED, downloadMbps + " Mbit/s")
+                                .apply();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                },
+                error -> error.printStackTrace()
+        );
+        requestQueue.add(request);
     }
 
     @Override

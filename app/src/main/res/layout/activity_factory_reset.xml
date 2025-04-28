@@ -140,9 +140,8 @@
                     android:id="@+id/confirmPinEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Enter your security PIN to confirm"
-                    android:inputType="numberPassword"
-                    android:maxLength="6" />
+                    android:hint="Enter your login password to confirm"
+                    android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Spacer -->

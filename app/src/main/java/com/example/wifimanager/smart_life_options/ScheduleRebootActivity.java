@@ -1,6 +1,5 @@
 package com.example.wifimanager.smart_life_options;
 
-import android.content.SharedPreferences;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,6 +17,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.wifimanager.R;
+import com.example.wifimanager.database.DatabaseHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -29,18 +29,21 @@ import java.util.List;
 
 public class ScheduleRebootActivity extends AppCompatActivity {
 
-    private static final String PREFS_NAME = "RebootSchedulePrefs";
-    private static final String SCHEDULES_KEY = "reboot_schedules";
+    private static final String TABLE_NAME = DatabaseHelper.TABLE_SCHEDULES;
+    private static final String KEY_REBOOT_SCHEDULES = "reboot_schedules";
 
     private LinearLayout schedulesContainer;
     private ActivityResultLauncher<Intent> scheduleLauncher;
     private List<RebootSchedule> schedules = new ArrayList<>();
     private LottieAnimationView lottieAnimationView;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_reboot);
+
+        dbHelper = DatabaseHelper.getInstance(this);
 
         // Initialize Lottie animation
         lottieAnimationView = findViewById(R.id.lotti_animation);
@@ -88,13 +91,9 @@ public class ScheduleRebootActivity extends AppCompatActivity {
     }
 
     private void setupLottieAnimation() {
-        // You can configure the animation here if needed
-        lottieAnimationView.setSpeed(1.0f);
-
-        // Optional: Add animation listener
-        lottieAnimationView.addAnimatorUpdateListener((animation) -> {
-            // Do something during animation if needed
-        });
+        // Animation setup code remains the same
+        lottieAnimationView.setAnimation(R.raw.reboot_animation);
+        lottieAnimationView.setRepeatCount(0);
     }
 
     private void updateSchedulesList() {
@@ -125,6 +124,10 @@ public class ScheduleRebootActivity extends AppCompatActivity {
                 }
             });
 
+            scheduleItem.setOnClickListener(v -> {
+                // Handle edit functionality if needed
+            });
+
             scheduleItem.setOnLongClickListener(v -> {
                 showDeleteDialog(finalI);
                 return true;
@@ -135,18 +138,14 @@ public class ScheduleRebootActivity extends AppCompatActivity {
     }
 
     private void saveSchedules() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
         Gson gson = new Gson();
         String json = gson.toJson(schedules);
-        editor.putString(SCHEDULES_KEY, json);
-        editor.apply();
+        dbHelper.putString(TABLE_NAME, KEY_REBOOT_SCHEDULES, json);
     }
 
     private List<RebootSchedule> loadSchedules() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         Gson gson = new Gson();
-        String json = prefs.getString(SCHEDULES_KEY, null);
+        String json = dbHelper.getString(TABLE_NAME, KEY_REBOOT_SCHEDULES, null);
         if (json == null) {
             return new ArrayList<>();
         }
@@ -192,23 +191,27 @@ public class ScheduleRebootActivity extends AppCompatActivity {
     public static class RebootSchedule implements Serializable {
         private String repeatMode;
         private String rebootTime;
-        private List<String> selectedDays;
+        private ArrayList<String> selectedDays;
         private boolean enabled;
 
-        public RebootSchedule() {}
-
-        public RebootSchedule(String repeatMode, String rebootTime, List<String> selectedDays, boolean enabled) {
+        public RebootSchedule(String repeatMode, String rebootTime, ArrayList<String> selectedDays, boolean enabled) {
             this.repeatMode = repeatMode;
             this.rebootTime = rebootTime;
             this.selectedDays = selectedDays;
             this.enabled = enabled;
         }
 
-        public String getRepeatMode() { return repeatMode; }
-        public String getRebootTime() { return rebootTime; }
-        public List<String> getSelectedDays() { return selectedDays; }
-        public boolean isEnabled() { return enabled; }
-        public void setEnabled(boolean enabled) { this.enabled = enabled; }
+        public String getRebootTime() {
+            return rebootTime;
+        }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
 
         public String getFormattedDays() {
             if (repeatMode.equals("Once")) return "Once";

@@ -114,23 +114,7 @@
                         android:layout_marginBottom="25dp"
                         android:gravity="center">
 
-                        <TextView
-                            android:id="@+id/gifTextView1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Blocked"
-                            android:textColor="@android:color/darker_gray"
-                            android:textSize="14sp"
-                            android:alpha="0.8"
-                            android:gravity="center" />
-                        <TextView
-                            android:id="@+id/textView106"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="106"
-                            android:textStyle="bold"
-                            android:textSize="20sp"
-                            android:textColor="@android:color/white" />
+
                         <TextView
                             android:id="@+id/gifTextView3"
                             android:layout_width="wrap_content"
@@ -139,7 +123,6 @@
                             android:textColor="@android:color/darker_gray"
                             android:textSize="14sp"
                             android:alpha="0.8"
-                            android:layout_marginTop="12dp"
                             android:gravity="center" />
 
                         <TextView
@@ -174,15 +157,14 @@
                 android:id="@+id/settingsCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp">
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="8dp">
+                    android:padding="10dp">
 
                     <!-- Security -->
                     <com.google.android.material.card.MaterialCardView
@@ -197,6 +179,7 @@
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <RelativeLayout
+                            android:id="@+id/Security"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="14dp">
@@ -255,6 +238,7 @@
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <RelativeLayout
+                            android:id="@+id/blocklist"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="14dp">
@@ -302,6 +286,7 @@
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <RelativeLayout
+                            android:id="@+id/passStrenght"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="14dp">
@@ -360,6 +345,7 @@
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <RelativeLayout
+                            android:id="@+id/networkSecurity"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="14dp">
@@ -379,7 +365,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_below="@id/tvNetworkSecurity"
                                 android:layout_marginTop="4dp"
-                                android:layout_marginEnd="120dp"
+                                android:layout_marginEnd="110dp"
                                 android:text="Use a password different from Wi-Fi password"
                                 android:textColor="@android:color/darker_gray"
                                 android:textSize="12sp" />

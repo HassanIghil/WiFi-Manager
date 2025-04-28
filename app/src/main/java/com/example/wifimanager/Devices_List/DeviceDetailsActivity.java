@@ -16,6 +16,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.wifimanager.R;
@@ -56,29 +59,35 @@ public class DeviceDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_device_details);
 
         // Set up edge-to-edge display
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            getWindow().setDecorFitsSystemWindows(false);
-            WindowInsetsController controller = getWindow().getInsetsController();
-            if (controller != null) {
-                controller.show(WindowInsets.Type.statusBars());
-            }
-        } else {
-            getWindow().setFlags(
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-            );
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            getWindow().setDecorFitsSystemWindows(false);
+//            WindowInsetsController controller = getWindow().getInsetsController();
+//            if (controller != null) {
+//                controller.show(WindowInsets.Type.statusBars());
+//            }
+//        } else {
+//            getWindow().setFlags(
+//                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+//                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+//            );
+//        }
+
+        // Set up toolbar with back arrow
+        Toolbar toolbar = findViewById(R.id.toolbarDevice);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setTitle("");
         }
+
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+
 
         // Get device name from intent
         String deviceName = getIntent().getStringExtra("DEVICE_NAME");
 
-        // Set up toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(""); // Set empty title
-        }
-        toolbar.setNavigationOnClickListener(v -> finish());
+
 
         // Initialize views
         notificationImageView = findViewById(R.id.notification_icon);
@@ -97,7 +106,6 @@ public class DeviceDetailsActivity extends AppCompatActivity {
         accessText = findViewById(R.id.accessText);
         notificationText = findViewById(R.id.notificationText); // Initialize notification text
         qosText = findViewById(R.id.qosText); // Initialize QoS text
-        internetAccessText = findViewById(R.id.accessText); // Initialize internet access text
 
         // Get data from intent
         String deviceIp = getIntent().getStringExtra("DEVICE_IP");
@@ -197,27 +205,38 @@ public class DeviceDetailsActivity extends AppCompatActivity {
     }
 
     private void hideViews() {
-        notificationImageView.setVisibility(View.GONE);
-        qosImage.setVisibility(View.GONE);
-        blockuser.setVisibility(View.GONE);
-        accessIcon.setVisibility(View.GONE);
+        // Instead of hiding individual elements, hide their parent containers
+        LinearLayout qosContainer = findViewById(R.id.qos_container);
+        LinearLayout accessContainer = findViewById(R.id.access_container);
+        LinearLayout blockContainer = findViewById(R.id.block_container);
+        LinearLayout notificationContainer = findViewById(R.id.notification_container);
 
-        notificationText.setVisibility(View.GONE); // Hide notification text
-        qosText.setVisibility(View.GONE); // Hide QoS text
-        blockText.setVisibility(View.GONE); // Hide block text
-        accessText.setVisibility(View.GONE); // Hide access text
+        LinearLayout bottomContent = findViewById(R.id.bottomContent);
+
+        qosContainer.setVisibility(View.GONE);
+        accessContainer.setVisibility(View.GONE);
+        blockContainer.setVisibility(View.GONE);
+        notificationContainer.setVisibility(View.GONE);
+
+        bottomContent.setVisibility(View.GONE);
+
     }
 
     private void showViews() {
-        notificationImageView.setVisibility(View.VISIBLE);
-        qosImage.setVisibility(View.VISIBLE);
-        blockuser.setVisibility(View.VISIBLE);
-        accessIcon.setVisibility(View.VISIBLE);
+        // Show the parent containers instead of individual elements
+        LinearLayout qosContainer = findViewById(R.id.qos_container);
+        LinearLayout accessContainer = findViewById(R.id.access_container);
+        LinearLayout blockContainer = findViewById(R.id.block_container);
+        LinearLayout notificationContainer = findViewById(R.id.notification_container);
 
-        notificationText.setVisibility(View.VISIBLE); // Show notification text
-        qosText.setVisibility(View.VISIBLE); // Show QoS text
-        blockText.setVisibility(View.VISIBLE); // Show block text
-        accessText.setVisibility(View.VISIBLE); // Show access text
+        LinearLayout bottomContent = findViewById(R.id.bottomContent);
+
+        qosContainer.setVisibility(View.VISIBLE);
+        accessContainer.setVisibility(View.VISIBLE);
+        blockContainer.setVisibility(View.VISIBLE);
+        notificationContainer.setVisibility(View.VISIBLE);
+
+        bottomContent.setVisibility(View.VISIBLE);
     }
 
     private void toggleNotificationState() {

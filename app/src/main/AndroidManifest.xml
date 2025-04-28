@@ -7,6 +7,10 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -14,18 +18,50 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WiFiManager"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".smart_life_options.WiFiScheduleRebootActivity"
+            android:exported="false" />
+        <activity
+            android:name=".smart_life_options.WiFiScheduleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Settings_Components.Sched_update"
+            android:exported="false" />
+        <activity
+            android:name=".Settings_Components.Menu_Blocklist"
+            android:exported="false" />
+        <activity
+            android:name=".Settings_Components.Security"
+            android:exported="false" />
+        <activity
+            android:name=".Settings_Components.BlockedDevicesActivity"
+            android:exported="false" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".Settings_Components.logs"
+            android:exported="false" />
+        <activity
             android:name=".smart_life_options.ScheduleRebootActivity"
             android:exported="false" />
         <activity
             android:name=".smart_life_options.HealthModeActivity"
             android:exported="false" />
-
         <activity
             android:name=".smart_life_options.GuestWifiActivity"
             android:exported="false" />

@@ -25,7 +25,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.wifimanager.DeviceAdapter;
@@ -61,13 +60,13 @@ public class HomeFragment extends Fragment {
     private DeviceListRunnable deviceListRunnable;
 
     // UI Components
-    private SwipeRefreshLayout swipeRefreshLayout;
     private TextView uploadSpeedTextView, downloadSpeedTextView;
     private DeviceAdapter adapter;
     private String STOK;
     private TextView statusTextView;
     private ImageView arrow;
     private SharedPreferences sharedPreferences;
+    private boolean isRefreshing = false;
 
     // Add this method to create a new instance of HomeFragment
     public static HomeFragment newInstance(String stok, String routerName) {
@@ -115,7 +114,7 @@ public class HomeFragment extends Fragment {
         public void run() {
             HomeFragment fragment = fragmentRef.get();
             if (fragment != null && fragment.isFragmentActive.get()) {
-                fragment.fetchConnectedDevices(false); // Automatic refresh without loading
+                fragment.fetchConnectedDevices(false); // Automatic refresh without loading indicator
                 handler.postDelayed(this, DEVICE_REFRESH_INTERVAL);
             }
         }
@@ -136,7 +135,6 @@ public class HomeFragment extends Fragment {
         // Initialize components
         setupViews(view);
         setupRecyclerView(view);
-        setupRefreshMechanism(view);
 
         // Initialize statusTextView
         statusTextView = view.findViewById(R.id.status);
@@ -156,12 +154,12 @@ public class HomeFragment extends Fragment {
         // Check firewall state at launch
         checkFirewallState();
 
-        startPeriodicUpdates();
-
         // Retrieve STOK from arguments
         if (getArguments() != null) {
             STOK = getArguments().getString("STOK");
         }
+
+        startPeriodicUpdates();
 
         return view;
     }
@@ -194,7 +192,7 @@ public class HomeFragment extends Fragment {
             routerNameTextView.setText(routerName);
         }
 
-        // Existing arrow setup code...
+        // Setup animated arrows
         ImageView upArrow = view.findViewById(R.id.imageView2);
         ImageView downArrow = view.findViewById(R.id.imageView3);
         Glide.with(this)
@@ -216,7 +214,7 @@ public class HomeFragment extends Fragment {
             STOK = getArguments().getString("STOK");
         }
 
-        // Pass the context (this fragment's context) as the fourth argument
+        // Initialize adapter with empty list
         adapter = new DeviceAdapter(new ArrayList<>(), device -> {
             Intent intent = new Intent(getActivity(), DeviceDetailsActivity.class);
             intent.putExtra("DEVICE_NAME", device.getName());
@@ -226,17 +224,7 @@ public class HomeFragment extends Fragment {
             startActivity(intent);
         }, STOK, requireContext());
 
-        // Add requireContext() as the fourth argument
         recyclerView.setAdapter(adapter);
-    }
-
-    private void setupRefreshMechanism(View view) {
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            if (isFragmentActive.get()) {
-                fetchConnectedDevices(true); // Manual refresh with loading
-            }
-        });
     }
 
     private void startPeriodicUpdates() {
@@ -264,18 +252,21 @@ public class HomeFragment extends Fragment {
             deviceListRunnable.clean();
         }
 
-        // Clear Glide resources
-        ImageView upArrow = getView().findViewById(R.id.imageView2);
-        ImageView downArrow = getView().findViewById(R.id.imageView3);
-        Glide.with(this).clear(upArrow);
-        Glide.with(this).clear(downArrow);
+        // Clear Glide resources if the view exists
+        View view = getView();
+        if (view != null) {
+            ImageView upArrow = view.findViewById(R.id.imageView2);
+            ImageView downArrow = view.findViewById(R.id.imageView3);
+            if (upArrow != null && downArrow != null) {
+                Glide.with(this).clear(upArrow);
+                Glide.with(this).clear(downArrow);
+            }
+        }
     }
 
-    private void fetchConnectedDevices(boolean showLoading) {
+    private void fetchConnectedDevices(boolean isManualRefresh) {
         if (!isFragmentActive.get()) return;
-        if (showLoading) {
-            safeRun(() -> swipeRefreshLayout.setRefreshing(true));
-        }
+
         new Thread(() -> {
             try {
                 String urlStr = "http://192.168.31.1/cgi-bin/luci/;stok=" + STOK + "/api/misystem/devicelist";
@@ -283,8 +274,10 @@ public class HomeFragment extends Fragment {
                 connection.setRequestMethod("GET");
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                     safeToast("Connection error: " + connection.getResponseCode());
+                    updateRefreshingState(false, "Not Connected");
                     return;
                 }
+
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 StringBuilder response = new StringBuilder();
                 String line;
@@ -292,16 +285,20 @@ public class HomeFragment extends Fragment {
                     response.append(line);
                 }
                 reader.close();
+
                 MiWifiDevicelistDO deviceListResponse = new Gson().fromJson(response.toString(), MiWifiDevicelistDO.class);
                 if (deviceListResponse == null || deviceListResponse.getList() == null) {
                     safeToast("No devices found");
+                    updateRefreshingState(false, "No Devices");
                     return;
                 }
+
                 List<MiWifiDeviceDO> devices = deviceListResponse.getList();
+
                 // Get the IP address of the current device
                 String currentDeviceIp = getCurrentDeviceIp();
                 Log.d("CurrentDeviceIP", "Current Device IP: " + currentDeviceIp);
-                // Log the current device's IP
+
                 // Sort the list to prioritize the current device
                 Collections.sort(devices, (device1, device2) -> {
                     String ip1 = device1.getIp().get(0).getIp(); // Assuming each device has at least one IP
@@ -317,18 +314,32 @@ public class HomeFragment extends Fragment {
                         return 0; // Maintain the original order for other devices
                     }
                 });
+
                 updateUI(() -> {
                     adapter.updateDeviceList(devices);
                     calculateAndDisplaySpeeds(devices);
-                    if (showLoading) {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
+
+                    // Update title with connected device count
+                    int deviceCount = devices.size();
+                    String titleText = deviceCount + " " + (deviceCount == 1 ? "Device" : "Devices") + " Connected";
+                    updateRefreshingState(false, titleText);
                 });
             } catch (Exception e) {
                 safeToast("Error: " + e.getMessage());
-                safeRun(() -> swipeRefreshLayout.setRefreshing(false));
+                updateRefreshingState(false, "Not Connected");
             }
         }).start();
+    }
+
+    private void updateRefreshingState(boolean isRefreshing, String titleText) {
+        updateUI(() -> {
+            this.isRefreshing = isRefreshing;
+
+            // Explicitly notify the adapter again (optional if you're worried about race conditions)
+            if (!isRefreshing && adapter != null) {
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
     private String getCurrentDeviceIp() {

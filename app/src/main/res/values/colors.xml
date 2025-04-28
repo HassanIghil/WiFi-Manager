@@ -2,7 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="gray">#808080</color>
+    <color name="gray">#757575</color>
     <color name="colorIcon">#FF5722</color> <!-- New color for icons and text -->
     <color name="blue">#0000FF</color> <!-- Define blue color -->
     <color name="colorPrimary">#6200EE</color> <!-- Define primary color -->
@@ -24,7 +24,7 @@
     <color name="textPrimary">#1F2937</color>
     <color name="textSecondary">#6B7280</color>
     <color name="textTertiary">#9CA3AF</color>
-    <color name="divider">#E5E7EB</color>
+    <color name="divider">#F0F0F0</color>
     <color name="buttonBackground">#F3F4F6</color>
     <color name="buttonText">#374151</color>
     <color name="buttonOutline">#D1D5DB</color>
@@ -36,4 +36,6 @@
     <color name="light_green_bg">#E8F5E9</color>
     <color name="dark_gray">#757575</color>
     <color name="white_30_percent">#4DFFFFFF</color>
+    <color name="grey_200">#EEEEEE</color>
+    <color name="text_secondary">#757575</color>
 </resources>

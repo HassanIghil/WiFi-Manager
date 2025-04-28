@@ -1,97 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="2dp"
-    app:cardCornerRadius="2dp"
-    app:cardElevation="2dp">
+    android:layout_marginLeft="3dp"
+    android:layout_marginRight="3dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    app:cardCornerRadius="6dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0.1dp"
+    app:strokeColor="#E0E0E0"
+    app:cardBackgroundColor="@android:color/white">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="16dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+        <!-- FrameLayout to overlay the badge on the device image -->
+        <FrameLayout
+            android:id="@+id/deviceImageContainer"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <!-- FrameLayout to overlay the badge on the device image -->
-            <FrameLayout
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+            <!-- Device Icon -->
+            <ImageView
+                android:id="@+id/deviceIcon"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
                 android:layout_gravity="center"
-                android:layout_marginEnd="16dp">
+                android:contentDescription="Device Icon"
+                app:srcCompat="@drawable/wifi" />
 
-                <!-- Device Icon -->
-                <ImageView
-                    android:id="@+id/deviceIcon"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:contentDescription="Device Icon"
-                    app:srcCompat="@drawable/wifi" />
+            <!-- Root Badge (initially hidden) -->
+            <ImageView
+                android:id="@+id/rootBadge"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="top|end"
+                android:paddingBottom="7dp"
+                android:paddingLeft="5dp"
+                android:visibility="gone"
+                android:contentDescription="Root Badge"
+                android:src="@drawable/root_bagde" />
+        </FrameLayout>
 
-                <!-- Root Badge (initially hidden) -->
-                <ImageView
-                    android:id="@+id/rootBadge"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:layout_gravity="top|end"
-                    android:paddingBottom="7dp"
-                    android:paddingLeft="5dp"
-                    android:visibility="gone"
-                    android:contentDescription="Root Badge"
-                    android:src="@drawable/root_bagde" />
-
-
-            </FrameLayout>
-
-            <TextView
-                android:id="@+id/deviceName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Device Name"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:ellipsize="end"
-                android:maxLines="1" />
-
-            <TextView
-                android:id="@+id/deviceConnectionTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:text="Connected: just now"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/deviceName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="8dp">
+            android:layout_marginStart="16dp"
+            android:text="Device Name"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintStart_toEndOf="@id/deviceImageContainer"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/deviceConnectionTime" />
 
-            <TextView
-                android:id="@+id/deviceMac"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="38dp"
-                android:text="MAC Address"
-                android:textSize="12sp"
-                android:layout_marginEnd="16dp" />
+        <TextView
+            android:id="@+id/deviceConnectionTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Connected: just now"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/deviceIp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="IP: 192.168.0.1"
-                android:textSize="12sp"
-                android:layout_marginEnd="10dp" />
-        </LinearLayout>
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+        <TextView
+            android:id="@+id/deviceMac"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="MAC Address"
+            android:textSize="10sp"
+            android:textColor="#757575"
+            app:layout_constraintStart_toEndOf="@id/deviceImageContainer"
+            app:layout_constraintTop_toBottomOf="@id/deviceName" />
+
+        <TextView
+            android:id="@+id/deviceIp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="IP: 192.168.0.1"
+            android:textSize="10sp"
+            android:textColor="#757575"
+            app:layout_constraintStart_toEndOf="@id/deviceMac"
+            app:layout_constraintTop_toTopOf="@id/deviceMac" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

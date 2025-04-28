@@ -331,9 +331,13 @@ public class MiWifi implements MiWifiService {
                 StringBuilder postData = new StringBuilder();
                 for (Map.Entry<String, String> entry : params.entrySet()) {
                     if (postData.length() > 0) postData.append('&');
-                    postData.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        postData.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
+                    }
                     postData.append('=');
-                    postData.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        postData.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
+                    }
                 }
 
                 // Send the POST data

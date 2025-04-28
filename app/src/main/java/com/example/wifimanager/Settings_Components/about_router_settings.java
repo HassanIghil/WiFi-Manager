@@ -1,8 +1,11 @@
 package com.example.wifimanager.Settings_Components;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -26,19 +29,25 @@ public class about_router_settings extends AppCompatActivity {
 
     private Button btnCheckUpdates;
     private LinearLayout locationSelector;
+    private EditText nameSelector;
     private TextView locationTextView; // TextView showing current location
+    private TextView routerNameTextView; // TextView showing router name
 
     private String currentLocation = "Home"; // Default location
+    private String currentRouterName = "Xiaomi_2251"; // Default router name
 
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about_router_settings);
 
         // Initialize views
+        nameSelector = findViewById(R.id.routernameSelector);
         btnCheckUpdates = findViewById(R.id.btnCheckUpdates);
         locationSelector = findViewById(R.id.locationSelector);
         locationTextView = findViewById(R.id.locationText);
+        routerNameTextView = findViewById(R.id.routernameSelector);
 
         // Set up toolbar with back arrow
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -79,6 +88,49 @@ public class about_router_settings extends AppCompatActivity {
                 showLocationDialog();
             }
         });
+
+        // Router name selector click listener
+        nameSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showRouterNameEditor();
+            }
+        });
+    }
+
+    private void showRouterNameEditor() {
+        // Directly use EditText instead of showing a dialog
+        EditText routerNameEditText = findViewById(R.id.routernameSelector);
+        routerNameEditText.setVisibility(View.VISIBLE); // Ensure it's visible
+
+        routerNameEditText.setText(currentRouterName);
+        routerNameEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                currentRouterName = s.toString().trim();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateRouterNameDisplay(); // Keep the function to update UI
+                Toast.makeText(
+                        about_router_settings.this,
+                        "Router name set to: " + currentRouterName,
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+        });
+    }
+
+
+    private void updateRouterNameDisplay() {
+        // Update the TextView that shows the current router name
+        if (routerNameTextView != null) {
+            routerNameTextView.setText(currentRouterName);
+        }
     }
 
     private void checkForUpdates() {

@@ -27,7 +27,7 @@
             android:textSize="18sp" />
     </androidx.appcompat.widget.Toolbar>
 
-    <!-- Dark Background Section with Spinner -->
+    <!-- Dark Background Section with Lottie Animation -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="220dp"
@@ -38,11 +38,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center">
 
-            <View
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/rebootAnimationView"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
-                android:layout_centerInParent="true"
-                android:background="@drawable/redo" />
+                android:layout_gravity="center"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                android:layout_centerInParent="true" />
         </RelativeLayout>
     </FrameLayout>
 
@@ -52,14 +55,15 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:background="#FFFFFF">
 
         <ImageView
             android:layout_marginTop="10dp"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/warning" />
+            android:src="@drawable/ic_warning"
+            />
 
         <TextView
             android:layout_width="match_parent"
@@ -69,8 +73,6 @@
             android:textColor="#9E9E9E"
             android:textSize="14sp" />
     </LinearLayout>
-
-
 
     <!-- Flexible space to push button to bottom -->
     <View

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+
 import androidx.fragment.app.Fragment;
 
 import com.example.wifimanager.R;
@@ -19,8 +20,9 @@ import com.example.wifimanager.Tools.Smart_life;
 public class SettingsFragment extends Fragment {
 
     private static final String TAG = "SettingsFragment";
-    private static String STOK = "";
+    public static String STOK ;
     private String routerName;
+
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -31,6 +33,8 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
+
+
 
         // Retrieve the router's name from the arguments and token
         // Inside onCreateView
@@ -63,10 +67,11 @@ public class SettingsFragment extends Fragment {
             startActivity(intent);
         });
 
-        // Add click listener for the settings grid item
+        // Change this line in SettingsFragment.java:
         LinearLayout settingsButton = view.findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), parametres.class);
+            intent.putExtra("STOK", STOK);  // Add this line to pass the token
             startActivity(intent);
         });
 

@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:background="@color/white"
     android:gravity="top"
-    android:id="@+id/main"> <!-- Add this line -->
+    android:id="@+id/main">
 
     <!-- Toolbar with Back Arrow -->
     <androidx.appcompat.widget.Toolbar
@@ -28,6 +28,160 @@
             android:textSize="20sp" />
     </androidx.appcompat.widget.Toolbar>
 
-    <!-- Add your smart life activity content here -->
+    <!-- Content Area -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Warning Icon -->
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/ic_warning"
+                android:contentDescription="Warning" />
+
+            <!-- Warning Title -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Warning: Factory Reset"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@color/red" />
+
+            <!-- Information Text -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Factory reset will erase all Wi-Fi networks, settings, and data stored in this application. This action cannot be undone."
+                android:textSize="16sp"
+                android:lineSpacingExtra="4dp" />
+
+            <!-- What Will Be Reset Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="The following will be erased:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_box_background"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• All saved Wi-Fi networks"
+                    android:textSize="16sp"
+                    android:drawablePadding="8dp"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• Network preferences and configurations"
+                    android:textSize="16sp"
+                    android:drawablePadding="8dp"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• Connection history and statistics"
+                    android:textSize="16sp"
+                    android:drawablePadding="8dp"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• App settings and customizations"
+                    android:textSize="16sp"
+                    android:drawablePadding="8dp" />
+            </LinearLayout>
+
+            <!-- Confirmation Checkbox -->
+            <CheckBox
+                android:id="@+id/confirmationCheckbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="I understand that this action cannot be undone"
+                android:textSize="16sp"/>
+
+            <!-- Reset Password/PIN Field -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/confirmPinLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:passwordToggleEnabled="true"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/confirmPinEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter your security PIN to confirm"
+                    android:inputType="numberPassword"
+                    android:maxLength="6" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Spacer -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="24dp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Action Area with Reset Button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@color/white"
+        android:elevation="8dp">
+
+        <Button
+            android:id="@+id/resetButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="FACTORY RESET"
+            android:textColor="@color/white"
+            android:background="@drawable/button_danger_background"
+            android:enabled="false"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CANCEL"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/button_outline_background"
+            android:layout_marginTop="8dp"
+            android:padding="12dp"
+            android:textSize="16sp" />
+    </LinearLayout>
 </LinearLayout>

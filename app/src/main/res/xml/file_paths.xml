@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- For Android 10 and below -->
+    <external-path name="external_downloads" path="Download/RouterLogs" />
+    <!-- For Android 11 and above -->
+    <external-files-path name="downloads" path="Download/RouterLogs" />
+</paths>

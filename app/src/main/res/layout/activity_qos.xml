@@ -1,33 +1,275 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white"
-    android:gravity="top"
-    android:id="@+id/main"> <!-- Add this line -->
+    android:background="@color/topColor">
 
-    <!-- Toolbar with Back Arrow -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <!-- TOP SECTION -->
+    <LinearLayout
+        android:id="@+id/topSection"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/topColor"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:navigationIcon="@drawable/left"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:paddingTop="10dp"
-        android:elevation="4dp">
+        android:layout_height="380dp"
+        android:orientation="vertical">
 
+        <!-- Simplified toolbar with just the left arrow back button -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/topColor"
+            android:paddingStart="16dp">
+
+            <ImageButton
+                android:id="@+id/backButton"
+                android:layout_width="28dp"
+                android:layout_height="22dp"
+                android:layout_centerVertical="true"
+                android:background="@null"
+                android:src="@drawable/left" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="QoS"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp" />
+        </RelativeLayout>
+
+        <!-- Circular speed dial -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/circularDial"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="20dp"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="false"
+                app:lottie_rawRes="@raw/qos_animation" />
+        </LinearLayout>
+
+        <!-- Upload/Download info section -->
+        <LinearLayout
+            android:id="@+id/speedInfoLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <!-- Upload speed info -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/up_arrow" />
+
+                    <TextView
+                        android:id="@+id/uploadSpeedValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Unknown"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Max upload speed"
+                    android:textColor="#8C8E96"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- Vertical divider -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="#40FFFFFF" />
+
+            <!-- Download speed info -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/down_arrow" />
+
+                    <TextView
+                        android:id="@+id/downloadSpeedValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Unknown"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Max download speed"
+                    android:textColor="#8C8E96"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Set internet bandwidth section -->
+        <LinearLayout
+            android:id="@+id/setBandwidthLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Set Internet bandwidth first"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/speedLimitSettings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Speed limit settings"
+                android:textColor="#8C8E96"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- BOTTOM SECTION -->
+    <LinearLayout
+        android:id="@+id/bottomSection"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp">
+
+        <!-- QoS Switch section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Quality Of Service"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
-    </androidx.appcompat.widget.Toolbar>
+            android:text="QoS"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="16sp" />
 
-    <!-- Add your smart life activity content here -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Limit the amount of bandwidth that each device can consume"
+                android:textColor="#8C8E96"
+                android:textSize="13sp" />
+
+            <Switch
+                android:id="@+id/qosSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:thumbTint="#FFFFFF"
+                android:trackTint="#6D6D6D"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+        </LinearLayout>
+
+        <!-- Priority Mode Selection -->
+        <LinearLayout
+            android:id="@+id/priorityModeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="20dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Priority Mode"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="16sp" />
+
+            <RadioGroup
+                android:id="@+id/priorityRadioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/radioAutoMode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Auto mode"
+                    android:padding="8dp"/>
+
+                <RadioButton
+                    android:id="@+id/radioGameFirst"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Game first"
+                    android:padding="8dp"/>
+
+                <RadioButton
+                    android:id="@+id/radioWebpageFirst"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Webpage first"
+                    android:padding="8dp"/>
+
+                <RadioButton
+                    android:id="@+id/radioVideoFirst"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Video first"
+                    android:padding="8dp"/>
+            </RadioGroup>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

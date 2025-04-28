@@ -101,8 +101,41 @@
                     android:layout_height="15dp"
                     android:src="@drawable/next" />
             </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="0.6dp" android:background="@color/light_gray"/>
+
+            <!-- Network Settings -->
+            <LinearLayout
+                android:id="@+id/blocked"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="15dp"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/block"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="5dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Blocked Devices"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black"
+                    android:layout_weight="1"/>
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/next" />
+            </LinearLayout>
 
             <View android:layout_width="match_parent" android:layout_height="20dp" android:background="@color/light_gray"/>
+
 
             <!-- Reboot Router -->
             <LinearLayout

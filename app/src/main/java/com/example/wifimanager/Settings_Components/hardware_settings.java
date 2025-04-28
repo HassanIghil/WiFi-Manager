@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -15,10 +16,26 @@ import com.example.wifimanager.Tools.Update;
 
 public class hardware_settings extends AppCompatActivity {
 
+    private String stok;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hardware_settings);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            stok = extras.getString("STOK");
+            if (stok == null || stok.isEmpty()) {
+                Toast.makeText(this, "Authentication token is missing", Toast.LENGTH_LONG).show();
+                finish(); // Close activity if no token
+                return;
+            }
+        } else {
+            Toast.makeText(this, "Authentication token is missing", Toast.LENGTH_LONG).show();
+            finish(); // Close activity if no extras
+            return;
+        }
 
         // Set up toolbar with back arrow
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -49,19 +66,19 @@ public class hardware_settings extends AppCompatActivity {
             public void onClick(View v) {
                 // Open the reset password activity
                 Intent intent = new Intent(hardware_settings.this, pass_reset.class);
+                intent.putExtra("STOK", stok); // Add this line to pass the token
                 startActivity(intent);
             }
         });
 
-        // You can add other click listeners for the remaining options as needed
-        // For example:
 
         LinearLayout updateOption = findViewById(R.id.update_option);
         updateOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Handle update option click
-                Intent intent = new Intent(hardware_settings.this, Update.class);
+                Intent intent = new Intent(hardware_settings.this, Sched_update.class);
+                intent.putExtra("STOK", stok); // Add this line to pass the token
                 startActivity(intent);
             }
         });
@@ -72,6 +89,7 @@ public class hardware_settings extends AppCompatActivity {
             public void onClick(View v) {
                 // Handle time zone option click
                 Intent intent = new Intent(hardware_settings.this, TimeZoneSettingsActivity.class);
+                intent.putExtra("STOK", stok); // Add this line to pass the token
                 startActivity(intent);
             }
         });
@@ -82,6 +100,18 @@ public class hardware_settings extends AppCompatActivity {
             public void onClick(View v) {
                 // Handle factory reset option click
                 Intent intent = new Intent(hardware_settings.this, FactoryResetActivity.class);
+                intent.putExtra("STOK", stok); // Add this line to pass the token
+                startActivity(intent);
+            }
+        });
+
+
+        LinearLayout log_data = findViewById(R.id.log_data);
+        log_data.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(hardware_settings.this, logs.class);
+                intent.putExtra("STOK", stok); // Add this line to pass the token
                 startActivity(intent);
             }
         });

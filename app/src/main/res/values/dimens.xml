@@ -21,4 +21,5 @@
     <dimen name="update_button_margin">10dp</dimen>
     <dimen name="update_button_text_size">16sp</dimen>
     <dimen name="check_icon_size">20dp</dimen>
+    <dimen name="speed_test_height">20dp</dimen>
 </resources>

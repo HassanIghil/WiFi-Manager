@@ -33,5 +33,23 @@
         <item name="android:windowExitAnimation">@anim/slide_out</item>
     </style>
 
+    <!-- TimePickerDialog Theme -->
+    <style name="TimePickerDialogTheme" parent="Theme.MaterialComponents.Dialog.Alert">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
+    <!-- Add these styles to your styles.xml file -->
+    <style name="NumberPickerText">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColorPrimary">@android:color/black</item>
+    </style>
+
+    <style name="NumberPickerBlueText">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColorPrimary">#03A9F4</item>
+    </style>
+
     <style name="TimePickerTheme">TimePickerTheme</style>
 </resources>

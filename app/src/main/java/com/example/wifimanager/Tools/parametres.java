@@ -14,10 +14,14 @@ import com.example.wifimanager.Settings_Components.*;
 
 public class parametres extends AppCompatActivity {
 
+    private static String STOK;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parametres);
+
+        STOK = getIntent().getStringExtra("STOK");
 
         // Set up toolbar with back arrow
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -41,8 +45,19 @@ public class parametres extends AppCompatActivity {
 
         // Set an OnClickListener on the Wi-Fi LinearLayout
         wifiSettingsLayout.setOnClickListener(v -> {
-            // Create an Intent to start the wifi_settings activity
             Intent intent = new Intent(parametres.this, wifi_settings.class);
+            intent.putExtra("STOK", STOK); // Pass the token forward
+            startActivity(intent);
+        });
+
+
+        // Find the Wi-Fi LinearLayout by its ID
+        LinearLayout blocked_dev = findViewById(R.id.blocked);
+
+        // Set an OnClickListener on the Wi-Fi LinearLayout
+        blocked_dev.setOnClickListener(v -> {
+            Intent intent = new Intent(parametres.this, BlockedDevicesActivity.class);
+            intent.putExtra("STOK", STOK); // Pass the token forward
             startActivity(intent);
         });
 
@@ -53,8 +68,10 @@ public class parametres extends AppCompatActivity {
         aboute_router.setOnClickListener(v -> {
             // Create an Intent to start the about_router_settings activity
             Intent intent = new Intent(parametres.this, about_router_settings.class);
+            intent.putExtra("STOK", STOK); // Pass the token forward
             startActivity(intent);
         });
+
 
 
         // Find the network settings LinearLayout by its ID
@@ -64,6 +81,7 @@ public class parametres extends AppCompatActivity {
         network_settings.setOnClickListener(v -> {
             // Create an Intent to start the about_router_settings activity
             Intent intent = new Intent(parametres.this, network_settings.class);
+            intent.putExtra("STOK", STOK); // Pass the token forward
             startActivity(intent);
         });
 
@@ -75,6 +93,7 @@ public class parametres extends AppCompatActivity {
         reboot_router.setOnClickListener(v -> {
             // Create an Intent to start the about_router_settings activity
             Intent intent = new Intent(parametres.this, reboot_settings.class);
+            intent.putExtra("STOK", STOK); // Pass the token forward
             startActivity(intent);
         });
 
@@ -85,6 +104,7 @@ public class parametres extends AppCompatActivity {
         hardware_settings.setOnClickListener(v -> {
             // Create an Intent to start the hardware_settings activity
             Intent intent = new Intent(parametres.this, hardware_settings.class);
+            intent.putExtra("STOK", STOK); // Pass the token forward
             startActivity(intent);
         });
 
@@ -107,6 +127,7 @@ public class parametres extends AppCompatActivity {
         region_settings.setOnClickListener(v -> {
             // Create an Intent to start the region_settings activity
             Intent intent = new Intent(parametres.this, region_settings.class);
+            intent.putExtra("STOK", STOK); // Pass the token forward
             startActivity(intent);
         });
 

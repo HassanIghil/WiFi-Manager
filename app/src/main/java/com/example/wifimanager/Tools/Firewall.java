@@ -1,19 +1,31 @@
 package com.example.wifimanager.Tools;
 
+import static android.app.PendingIntent.getActivity;
+
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.wifimanager.R;
+import com.example.wifimanager.Settings_Components.BlockedDevicesActivity;
+import com.example.wifimanager.Settings_Components.Menu_Blocklist;
+import com.example.wifimanager.Settings_Components.Security;
+import com.example.wifimanager.Settings_Components.pass_reset;
+import com.example.wifimanager.Settings_Components.wifi_settings;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import okhttp3.Call;
@@ -32,7 +44,7 @@ public class Firewall extends AppCompatActivity {
     private ImageView innerImageView;
     private TextView smallTextView;
     private MaterialButton turnOffButton;
-    private TextView gifTextView1, gifTextView3, textView106, textView0hr40m;
+    private TextView gifTextView3, textView0hr40m;
     private View statusCard; // Changed from MaterialCardView to View to match FrameLayout in XML
     private Toolbar toolbar;
     private ImageView menuButton; // Added to match XML
@@ -48,12 +60,20 @@ public class Firewall extends AppCompatActivity {
     private static final String PREF_SESSION_START = "session_start_time";
     private Handler handler;
     private Runnable refreshRunnable;
+
+    private RelativeLayout blocklist;
+    private RelativeLayout passwordStrength;
+    private RelativeLayout netSecurity;
+    private RelativeLayout security;
     private static final int REFRESH_INTERVAL = 60000; // Refresh every 1 min
 
     // Member variables to store the current status
     private int currentFirewallState = -1; // -1 means uninitialized
     private int currentBlockedCount = -1;
     private int currentProtectedTime = -1;
+
+    private static final int SECURITY_ACTIVITY_REQUEST_CODE = 1001;
+    private TextView tvSecurityLevel, tvSecurityDesc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +85,11 @@ public class Firewall extends AppCompatActivity {
 
         // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences("firewall_prefs", MODE_PRIVATE);
+
+        //Initialize TextViews
+        tvSecurityLevel = findViewById(R.id.tvSecurityLevel);
+        tvSecurityDesc = findViewById(R.id.tvSecurityDesc);
+
 
         // Set up toolbar with back arrow
         toolbar = findViewById(R.id.toolbar);
@@ -83,8 +108,9 @@ public class Firewall extends AppCompatActivity {
         // Initialize menu button from updated layout
         menuButton = findViewById(R.id.menuButton);
         menuButton.setOnClickListener(v -> {
-            // Handle menu button click
-            // This can be implemented later with specific menu functionality
+            Intent intent = new Intent(Firewall.this, Menu_Blocklist.class);
+            intent.putExtra("STOK", STOK);
+            startActivity(intent);
         });
 
         // Initialize views from the updated layout
@@ -92,9 +118,7 @@ public class Firewall extends AppCompatActivity {
         innerImageView = findViewById(R.id.innerImageView);
         smallTextView = findViewById(R.id.smallTextView);
         turnOffButton = findViewById(R.id.turnOffButton);
-        gifTextView1 = findViewById(R.id.gifTextView1);
         gifTextView3 = findViewById(R.id.gifTextView3);
-        textView106 = findViewById(R.id.textView106);
         textView0hr40m = findViewById(R.id.textView0hr40m);
         statusCard = findViewById(R.id.statusCard); // Now a FrameLayout instead of MaterialCardView
 
@@ -110,6 +134,45 @@ public class Firewall extends AppCompatActivity {
         // Set initial visibility
         innerImageView.setVisibility(View.GONE);
         smallTextView.setVisibility(View.GONE);
+
+        //set onclick to view blocklist
+        blocklist = findViewById(R.id.blocklist);
+        blocklist.setOnClickListener(v -> {
+            Intent intent = new Intent(Firewall.this, BlockedDevicesActivity.class);
+            intent.putExtra("STOK", STOK);
+            startActivity(intent);
+        });
+
+        //set onclick to view PassStrength
+        passwordStrength = findViewById(R.id.passStrenght);
+        passwordStrength.setOnClickListener(v -> {
+            Intent intent = new Intent(Firewall.this, wifi_settings.class);
+            intent.putExtra("STOK", STOK);
+            startActivity(intent);
+        });
+
+        //set onclick to view network Security
+        netSecurity = findViewById(R.id.networkSecurity);
+        netSecurity.setOnClickListener(v -> {
+            Intent intent = new Intent(Firewall.this, pass_reset.class);
+            intent.putExtra("STOK", STOK);
+            startActivity(intent);
+        });
+
+        //set onclick to view Security
+        security = findViewById(R.id.Security);
+        security.setOnClickListener(v -> {
+            Intent intent = new Intent(Firewall.this, Security.class);
+            intent.putExtra("STOK", STOK);
+            startActivityForResult(intent, SECURITY_ACTIVITY_REQUEST_CODE);
+        });
+
+        // Load initial security level
+        loadSecurityLevel();
+
+
+
+
 
         // Toggle button click listener
         turnOffButton.setOnClickListener(v -> {
@@ -144,6 +207,51 @@ public class Firewall extends AppCompatActivity {
         handler.post(refreshRunnable);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SECURITY_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            String selectedLevel = data.getStringExtra("selected_level");
+            updateSecurityLevelUI(selectedLevel);
+            saveSecurityLevel(selectedLevel);
+        }
+    }
+
+    private void loadSecurityLevel() {
+        SharedPreferences prefs = getSharedPreferences("SecurityPrefs", MODE_PRIVATE);
+        String level = prefs.getString("security_level", "high");
+        updateSecurityLevelUI(level);
+    }
+
+    private void saveSecurityLevel(String level) {
+        SharedPreferences.Editor editor = getSharedPreferences("SecurityPrefs", MODE_PRIVATE).edit();
+        editor.putString("security_level", level);
+        editor.apply();
+    }
+
+    private void updateSecurityLevelUI(String level) {
+        // Add animation
+        tvSecurityLevel.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
+        tvSecurityDesc.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
+
+        switch (level) {
+            case "high":
+                tvSecurityLevel.setText("High");
+                tvSecurityLevel.setTextColor(Color.parseColor("#4CAF50")); // Green
+                tvSecurityDesc.setText("Block suspicious devices and blacklist, notify of new devices");
+                break;
+            case "medium":
+                tvSecurityLevel.setText("Medium");
+                tvSecurityLevel.setTextColor(Color.parseColor("#FF9800")); // Orange
+                tvSecurityDesc.setText("Block blacklist, notify of suspicious devices");
+                break;
+            case "low":
+                tvSecurityLevel.setText("Low");
+                tvSecurityLevel.setTextColor(Color.parseColor("#F44336")); // Red
+                tvSecurityDesc.setText("Block blacklist only");
+                break;
+        }
+    }
     private void setupSettingsCardListeners() {
         // Find all the card views in the settings section
         MaterialCardView securityCard = findViewById(R.id.securityCard);
@@ -269,7 +377,6 @@ public class Firewall extends AppCompatActivity {
     }
 
     private void updateBlockedAndProtectedCount(int blockedCount, int protectedTime) {
-        textView106.setText("" + blockedCount);
         textView0hr40m.setText(formatTime(protectedTime));
     }
 
@@ -280,13 +387,10 @@ public class Firewall extends AppCompatActivity {
         lottieAnimationView.playAnimation();
 
         // Show existing views
-        gifTextView1.setVisibility(View.VISIBLE);
         gifTextView3.setVisibility(View.VISIBLE);
-        textView106.setVisibility(View.VISIBLE);
         textView0hr40m.setVisibility(View.VISIBLE);
 
-        // Update "Blocked" and "Protected" text
-        textView106.setText("" + blockedCount);
+        // Update "Protected" text
         textView0hr40m.setText(formatTime(protectedTime));
 
         // Hide shield and small text
@@ -306,9 +410,7 @@ public class Firewall extends AppCompatActivity {
         lottieAnimationView.playAnimation();
 
         // Hide existing views
-        gifTextView1.setVisibility(View.GONE);
         gifTextView3.setVisibility(View.GONE);
-        textView106.setVisibility(View.GONE);
         textView0hr40m.setVisibility(View.GONE);
 
         // Show shield and small text

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set Internet Bandwidth"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/uploadSpeedInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Upload Speed (Mbps)"
+            android:inputType="numberDecimal"
+            android:maxLength="5"
+            android:textColorHint="#757575"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/downloadSpeedInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Download Speed (Mbps)"
+            android:inputType="numberDecimal"
+            android:maxLength="5"
+            android:textColorHint="#757575"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Note: Set bandwidth limits before enabling QoS"
+        android:textColor="#757575"
+        android:textSize="12sp"/>
+
+</LinearLayout>

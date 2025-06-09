@@ -287,6 +287,7 @@ public class HomeFragment extends Fragment {
                 Glide.with(this).clear(upArrow);
                 Glide.with(this).clear(downArrow);
             }
+
         }
     }    private void fetchConnectedDevices(boolean isManualRefresh) {
         if (!isFragmentActive.get()) return;
